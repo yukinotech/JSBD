@@ -4,5 +4,15 @@
   "main": "index.js",
   "repository": "https://github.com/yukinotech/JSBD",
   "author": "yukinotech",
-  "license": "MIT"
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node index.ts",
+    "dev": "tsc --project tsconfig.json",
+    "test": "tsc --project tsconfig.json && jest ./test/isLiteral.test.js"
+  },
+  "devDependencies": {
+    "jest": "^27.4.4",
+    "typescript": "^4.5.3"
+  }
 }
