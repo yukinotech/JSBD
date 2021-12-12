@@ -1,0 +1,8 @@
+{
+  "name": "JSBD",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "https://github.com/yukinotech/JSBD",
+  "author": "yukinotech",
+  "license": "MIT"
+}
