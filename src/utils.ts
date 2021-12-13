@@ -3,7 +3,9 @@ import { DecimalSign } from './type'
 export function isLiteral(str: string) {
   // first check if str is legal literal number ,see test for detail
   if (
-    str.match(/^(-|\+)?((0\.[0-9]*)|([1-9][0-9]*\.[0-9]*)|([1-9][0-9]*)|(0))$/)
+    str.match(
+      /^(-|\+)?((0\.[0-9]*)|([1-9][0-9]*\.[0-9]*)|(\.[0-9]+)|([1-9][0-9]*)|(0))$/
+    )
   ) {
     return true
   } else {
@@ -24,13 +26,11 @@ export function parseLiteral(str: string) {
   }
   if (str.indexOf('.') !== -1) {
     // if has point remove last zero
-    for(let i =0 ;i<str.length;i++){
-      if(str[length-1]==='.'){
-
+    for (let i = 0; i < str.length; i++) {
+      if (str[length - 1] === '.') {
       }
     }
   } else {
-
   }
 
   return { sign, mantissa, exponent }

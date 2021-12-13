@@ -10,10 +10,17 @@
     "i": "yarn install --registry=https://registry.npmmirror.com/",
     "start": "ts-node index.ts",
     "dev": "tsc --project tsconfig.json",
-    "test": "tsc --project tsconfig.json && NODE_OPTIONS=--experimental-vm-modules npx jest ./test/isLiteral.test.js"
+    "test": "tsc --project tsconfig.json && cross-env NODE_OPTIONS=--experimental-vm-modules npx jest ./test/isLiteral.test.js"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
+    "husky": "^7.0.4",
     "jest": "^27.4.4",
+    "lint-staged": "^12.1.2",
+    "prettier": "2.5.1",
     "typescript": "^4.5.3"
+  },
+  "lint-staged": {
+    "*.{js,css,md,ts}": "prettier --write"
   }
 }
