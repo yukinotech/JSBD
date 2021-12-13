@@ -1,15 +1,10 @@
-import { DecimalIntVal, DecimalSign } from './type'
+import { DecimalIntVal, DecimalSign, Exponent } from './type'
 import { isLiteral, parseLiteral } from './utils'
 
-class BigInt {
-  constructor(intVal: string) {
-    return intVal
-  }
-}
 class Decimal {
   sign: DecimalSign
   mantissa: string
-  exponent: string
+  exponent: Exponent
   constructor(intVal: DecimalIntVal) {
     switch (typeof intVal) {
       // case 'number': {

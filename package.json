@@ -10,7 +10,7 @@
     "i": "yarn install --registry=https://registry.npmmirror.com/",
     "start": "ts-node index.ts",
     "dev": "tsc --project tsconfig.json",
-    "test": "tsc --project tsconfig.json && cross-env NODE_OPTIONS=--experimental-vm-modules npx jest ./test/isLiteral.test.js"
+    "test": "tsc --project tsconfig.json && cross-env NODE_OPTIONS=--experimental-vm-modules npx jest ./test"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
