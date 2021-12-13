@@ -13,6 +13,7 @@ import { isLiteral } from '../dist/utils.js'
 // 1180
 // 01180 ❌
 // -332
+// .2
 
 test('+0', () => {
   expect(isLiteral('+0')).toBeTruthy()
