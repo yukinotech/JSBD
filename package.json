@@ -7,9 +7,10 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
+    "i": "yarn install --registry=https://registry.npmmirror.com/",
     "start": "ts-node index.ts",
     "dev": "tsc --project tsconfig.json",
-    "test": "tsc --project tsconfig.json && jest ./test/isLiteral.test.js"
+    "test": "tsc --project tsconfig.json && NODE_OPTIONS=--experimental-vm-modules npx jest ./test/isLiteral.test.js"
   },
   "devDependencies": {
     "jest": "^27.4.4",
