@@ -64,5 +64,7 @@ export class JSBD {
     options: RoundOption = {
       roundingMode: 'half up',
     }
-  ) {}
+  ) {
+    let { roundingMode, maximumFractionDigits } = options
+  }
 }
