@@ -2,8 +2,8 @@
   "compilerOptions": {
     "outDir": "./dist", // 指定输出目录
     "rootDir": "./src", // 指定输出文件目录(用于输出)，用于控制输出目录结构
-    "target": "es6",
-    "module": "es6",
+    "target": "es2020",
+    "module": "es2020",
     "noImplicitAny": true,
     "sourceMap": false,
     "strict": true,
