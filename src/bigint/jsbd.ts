@@ -66,5 +66,12 @@ export class JSBD {
     }
   ) {
     let { roundingMode, maximumFractionDigits } = options
+    if (!maximumFractionDigits) {
+      return a
+    }
+    switch (roundingMode) {
+      case 'up': {
+      }
+    }
   }
 }
