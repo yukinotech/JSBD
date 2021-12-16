@@ -9,13 +9,13 @@ export class JSBD {
   static add(a: Decimal, b: Decimal) {}
   // equal => a === b
   static equal(a: Decimal, b: Decimal): boolean {
-    let minus: bigint
+    let minus: number
     if (a.exponent > b.exponent) {
       minus = a.exponent - b.exponent
-      return a.mantissa * 10n ** minus === b.mantissa
+      return a.mantissa * 10n ** BigInt(minus) === b.mantissa
     } else if (a.exponent < b.exponent) {
       minus = b.exponent - a.exponent
-      return b.mantissa * 10n ** minus === a.mantissa
+      return b.mantissa * 10n ** BigInt(minus) === a.mantissa
     } else {
       return a.mantissa === b.mantissa
     }
@@ -26,13 +26,13 @@ export class JSBD {
   }
   // lessThan => a < b
   static lessThan(a: Decimal, b: Decimal): boolean {
-    let minus: bigint
+    let minus: number
     if (a.exponent > b.exponent) {
       minus = a.exponent - b.exponent
-      return a.mantissa * 10n ** minus < b.mantissa
+      return a.mantissa * 10n ** BigInt(minus) < b.mantissa
     } else if (a.exponent < b.exponent) {
       minus = b.exponent - a.exponent
-      return a.mantissa < b.mantissa * 10n ** minus
+      return a.mantissa < b.mantissa * 10n ** BigInt(minus)
     } else {
       return a.mantissa < b.mantissa
     }
@@ -43,13 +43,13 @@ export class JSBD {
   }
   // greaterThan => a > b
   static greaterThan(a: Decimal, b: Decimal): boolean {
-    let minus: bigint
+    let minus: number
     if (a.exponent > b.exponent) {
       minus = a.exponent - b.exponent
-      return a.mantissa * 10n ** minus > b.mantissa
+      return a.mantissa * 10n ** BigInt(minus) > b.mantissa
     } else if (a.exponent < b.exponent) {
       minus = b.exponent - a.exponent
-      return a.mantissa > b.mantissa * 10n ** minus
+      return a.mantissa > b.mantissa * 10n ** BigInt(minus)
     } else {
       return a.mantissa > b.mantissa
     }
@@ -67,28 +67,37 @@ export class JSBD {
   ): Decimal | undefined {
     let { roundingMode, maximumFractionDigits } = options
     let dig = maximumFractionDigits
-    if (!dig) {
-      return a
-    }
-    switch (roundingMode) {
-      case 'up': {
-        if (dig < 0) {
-          if (a.exponent > dig) {
-            let minus = a.exponent - BigInt(dig)
-            let div = 10n ** minus
-            console.log('div', div)
-            let hasZero = (a.mantissa / div) * div
-            console.log('hasZero', hasZero)
-            let left = a.mantissa - hasZero
-            console.log('left', left)
-            if (left > 0) {
-              a.mantissa = hasZero + div
-            } else {
-              a.mantissa = hasZero
-            }
-            return a
+    if (dig === undefined) return a
+    if (a.mantissa === 0n) return a
+    // 取反
+    dig = -dig
+    if (roundingMode === 'up' || roundingMode === 'down') {
+      if (a.exponent >= dig) {
+        return a
+      } else {
+        // 缩放 maximumFractionDigits
+        let minus = dig - a.exponent
+        let div = 10n ** BigInt(minus)
+        let left = a.mantissa % div
+        let withZero = a.mantissa - left
+        if (a.mantissa > 0n && left > 0n) {
+          if (roundingMode === 'up') {
+            a.mantissa = withZero + div
           } else {
+            a.mantissa = withZero
           }
+          return a
+        } else if (a.mantissa < 0n && left < 0n) {
+          if (roundingMode === 'up') {
+            a.mantissa = withZero - div
+          } else {
+            a.mantissa = withZero
+          }
+          return a
+        } else {
+          // left === 0n
+          a.mantissa = withZero
+          return a
         }
       }
     }

@@ -16,7 +16,7 @@ export function isLiteral(str: string) {
 export function parseLiteral(str: string) {
   let sign: bigint = 1n
   let mantissa: bigint
-  let exponent: bigint
+  let exponent: number
   if (str[0] === '-') {
     sign = -1n
     str = str.slice(1)
@@ -30,16 +30,16 @@ export function parseLiteral(str: string) {
     if (subStr) {
       mantissa = sign * BigInt(subStr)
       // str.length must to be < Number.MAX_SAFE_INTEGER
-      exponent = BigInt(String(-(str.length - 1 - pointI)))
+      exponent = -(str.length - 1 - pointI)
     } else {
       // 0
       mantissa = BigInt('0')
-      exponent = BigInt('0')
+      exponent = 0
     }
   } else {
     // int
     mantissa = BigInt(str)
-    exponent = BigInt('0')
+    exponent = 0
   }
 
   return { mantissa, exponent }

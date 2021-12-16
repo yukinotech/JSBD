@@ -2,7 +2,7 @@ import { isLiteral, parseLiteral } from './utils'
 
 export class Decimal {
   mantissa!: bigint
-  exponent!: bigint
+  exponent!: number
   constructor(intVal: number | string | bigint) {
     switch (typeof intVal) {
       case 'bigint': {
@@ -41,14 +41,14 @@ export class Decimal {
       }
       return this.mantissa.toString(10) + zero
     } else {
-      let offset = this.exponent * -1n
+      let offset = this.exponent * -1
       let str = this.mantissa.toString(10)
       if (str.length > offset) {
-        let minus = Number(BigInt(str.length) - offset)
+        let minus = str.length - offset
         let withZeroStr = str.slice(0, minus) + '.' + str.slice(minus)
         return withZeroStr.replace(/\.?0*$/, '')
       } else {
-        let minus = Number(offset - BigInt(str.length))
+        let minus = offset - str.length
         let addZero = '0.'
         while (minus > 0) {
           addZero += '0'

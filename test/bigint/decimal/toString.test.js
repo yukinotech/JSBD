@@ -39,3 +39,8 @@ test('"123.096" toString', () => {
   let a = JSBD.BigDecimal('123.096')
   expect(a.toString()).toBe('123.096')
 })
+
+test('"101.005" toString', () => {
+  let a = JSBD.BigDecimal('101.005')
+  expect(a.toString()).toBe('101.005')
+})
