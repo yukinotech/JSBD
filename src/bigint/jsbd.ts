@@ -8,7 +8,7 @@ export class JSBD {
   // add => a + b
   static add(a: Decimal, b: Decimal) {}
   // equal => a === b
-  static equal(a: Decimal, b: Decimal) {
+  static equal(a: Decimal, b: Decimal): boolean {
     let minus: bigint
     if (a.exponent > b.exponent) {
       minus = a.exponent - b.exponent
@@ -21,11 +21,11 @@ export class JSBD {
     }
   }
   // notEqual => a !== b
-  static notEqual(a: Decimal, b: Decimal) {
+  static notEqual(a: Decimal, b: Decimal): boolean {
     return !JSBD.equal(a, b)
   }
   // lessThan => a < b
-  static lessThan(a: Decimal, b: Decimal) {
+  static lessThan(a: Decimal, b: Decimal): boolean {
     let minus: bigint
     if (a.exponent > b.exponent) {
       minus = a.exponent - b.exponent
@@ -38,11 +38,11 @@ export class JSBD {
     }
   }
   // greaterThanOrEqual => a >= b
-  static greaterThanOrEqual(a: Decimal, b: Decimal) {
+  static greaterThanOrEqual(a: Decimal, b: Decimal): boolean {
     return !JSBD.lessThan(a, b)
   }
   // greaterThan => a > b
-  static greaterThan(a: Decimal, b: Decimal) {
+  static greaterThan(a: Decimal, b: Decimal): boolean {
     let minus: bigint
     if (a.exponent > b.exponent) {
       minus = a.exponent - b.exponent
@@ -55,7 +55,7 @@ export class JSBD {
     }
   }
   // lessThanOrEqual => a <= b
-  static lessThanOrEqual(a: Decimal, b: Decimal) {
+  static lessThanOrEqual(a: Decimal, b: Decimal): boolean {
     return !JSBD.greaterThan(a, b)
   }
   // round => BigDecimal.round
@@ -64,13 +64,32 @@ export class JSBD {
     options: RoundOption = {
       roundingMode: 'half up',
     }
-  ) {
+  ): Decimal | undefined {
     let { roundingMode, maximumFractionDigits } = options
-    if (!maximumFractionDigits) {
+    let dig = maximumFractionDigits
+    if (!dig) {
       return a
     }
     switch (roundingMode) {
       case 'up': {
+        if (dig < 0) {
+          if (a.exponent > dig) {
+            let minus = a.exponent - BigInt(dig)
+            let div = 10n ** minus
+            console.log('div', div)
+            let hasZero = (a.mantissa / div) * div
+            console.log('hasZero', hasZero)
+            let left = a.mantissa - hasZero
+            console.log('left', left)
+            if (left > 0) {
+              a.mantissa = hasZero + div
+            } else {
+              a.mantissa = hasZero
+            }
+            return a
+          } else {
+          }
+        }
       }
     }
   }
