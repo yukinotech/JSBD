@@ -1,4 +1,4 @@
-import { isLiteral, parseLiteral } from './utils'
+import { isLiteral, parseLiteral, isSN } from './utils'
 
 export class Decimal {
   mantissa!: bigint
@@ -13,11 +13,12 @@ export class Decimal {
       }
       case 'string': {
         if (isLiteral(intVal)) {
+          // style like 1234.56
           let { mantissa, exponent } = parseLiteral(intVal)
           this.mantissa = mantissa
           this.exponent = exponent
-        } else if (isLiteral(intVal)) {
-          // to do scientific notation
+        } else if (isSN(intVal)) {
+          // scientific notation style like 115e-10
         } else {
           throw new Error('string value must be legal number')
         }

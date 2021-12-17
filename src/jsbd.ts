@@ -1,5 +1,6 @@
 import { DecimalIntVal, RoundOption } from './type'
 import { Decimal } from './decimal'
+import { snDecimal, isInteger, getAbs } from './utils'
 
 export class JSBD {
   static BigDecimal(intVal: DecimalIntVal) {
@@ -66,6 +67,26 @@ export class JSBD {
     }
   ): Decimal {
     let { roundingMode, maximumFractionDigits } = options
+    // params type check
+    // check roundingMode
+    if (
+      roundingMode !== 'up' &&
+      roundingMode !== 'down' &&
+      roundingMode !== 'half down' &&
+      roundingMode !== 'half up' &&
+      roundingMode !== 'half even'
+    ) {
+      throw new Error(
+        `roundingMode should be one of 'down' | 'half down' | 'half up' | 'half even' | 'up'`
+      )
+    }
+    // check maximumFractionDigits
+    if (
+      !isInteger(maximumFractionDigits) &&
+      maximumFractionDigits !== undefined
+    ) {
+      throw new Error(`maximumFractionDigits should be integer`)
+    }
     let dig = maximumFractionDigits
     if (dig === undefined) return a
     if (a.mantissa === 0n) return a
@@ -82,25 +103,85 @@ export class JSBD {
         let withZero = a.mantissa - left
         if (a.mantissa > 0n && left > 0n) {
           if (roundingMode === 'up') {
-            a.mantissa = withZero + div
+            return snDecimal(withZero + div, a.exponent)
           } else {
-            a.mantissa = withZero
+            return snDecimal(withZero, a.exponent)
           }
-          return a
         } else if (a.mantissa < 0n && left < 0n) {
           if (roundingMode === 'up') {
-            a.mantissa = withZero - div
+            return snDecimal(withZero - div, a.exponent)
           } else {
-            a.mantissa = withZero
+            return snDecimal(withZero, a.exponent)
           }
-          return a
         } else {
           // left === 0n
-          a.mantissa = withZero
-          return a
+          return snDecimal(withZero, a.exponent)
+        }
+      }
+    } else {
+      if (a.exponent >= dig) {
+        return a
+      } else {
+        let minus = dig - a.exponent
+        let div = 10n ** BigInt(minus)
+        let subDiv = 10n ** BigInt(minus - 1)
+        let left = a.mantissa % div
+        let subLeft = a.mantissa % subDiv
+        let dependValue = (left - subLeft) / subDiv
+        let withZero = a.mantissa - left
+        console.log('div', div)
+        console.log('subDiv', subDiv)
+        console.log('left', left)
+        console.log('subLeft', subLeft)
+        console.log('withZero', withZero)
+        console.log('dependValue', dependValue)
+        if (roundingMode === 'half up') {
+          if (getAbs(dependValue) > 4) {
+            if (a.mantissa > 0) {
+              return snDecimal(withZero + div, a.exponent)
+            } else {
+              return snDecimal(withZero - div, a.exponent)
+            }
+          } else {
+            return snDecimal(withZero, a.exponent)
+          }
+        } else if (roundingMode === 'half down') {
+          if (getAbs(dependValue) > 5) {
+            if (a.mantissa > 0) {
+              return snDecimal(withZero + div, a.exponent)
+            } else {
+              return snDecimal(withZero - div, a.exponent)
+            }
+          } else {
+            return snDecimal(withZero, a.exponent)
+          }
+        } else {
+          // roundingMode === 'half even'
+          if (getAbs(dependValue) > 5) {
+            if (a.mantissa > 0) {
+              return snDecimal(withZero + div, a.exponent)
+            } else {
+              return snDecimal(withZero - div, a.exponent)
+            }
+          } else if (getAbs(dependValue) < 5) {
+            return snDecimal(withZero, a.exponent)
+          } else {
+            // dependValue === 5
+            let superDiv = 10n ** BigInt(minus + 1)
+            let superLeft = a.mantissa % superDiv
+            let evenDependValue = (superLeft - left) / div
+            if (evenDependValue % 1n !== 0n) {
+              if (a.mantissa > 0) {
+                return snDecimal(withZero + div, a.exponent)
+              } else {
+                return snDecimal(withZero - div, a.exponent)
+              }
+            } else {
+              return snDecimal(withZero, a.exponent)
+            }
+          }
         }
       }
     }
-    return a
   }
 }
