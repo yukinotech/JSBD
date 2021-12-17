@@ -4,21 +4,23 @@
   "main": "index.js",
   "repository": "https://github.com/yukinotech/JSBD",
   "author": "yukinotech",
-  "type": "module",
   "license": "MIT",
   "scripts": {
     "i": "yarn install --registry=https://registry.npmmirror.com/",
     "start": "ts-node index.ts",
     "dev": "tsc --project tsconfig.json",
-    "test": "tsc --project tsconfig.json && cross-env NODE_OPTIONS=--experimental-vm-modules npx jest ./test"
+    "test:pre": "tsc --project tsconfig.json && cross-env NODE_OPTIONS=--experimental-vm-modules npx jest ./test",
+    "test": "jest --coverage"
   },
   "devDependencies": {
+    "@types/jest": "^27.0.3",
     "cross-env": "^7.0.3",
     "husky": "^4.3.8",
-    "jest": "^27.4.4",
+    "jest": "^27.4.5",
     "lint-staged": "^12.1.2",
     "prettier": "2.5.1",
     "pretty-quick": "^3.1.2",
+    "ts-jest": "^27.1.2",
     "typescript": "^4.5.3"
   },
   "husky": {

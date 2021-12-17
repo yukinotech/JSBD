@@ -14,33 +14,33 @@ export function isLiteral(str: string) {
 }
 
 export function parseLiteral(str: string) {
-  let sign: DecimalSign = 1
-  let mantissa: string
-  let exponent: Exponent
+  let sign: bigint = 1n
+  let mantissa: bigint
+  let exponent: number
   if (str[0] === '-') {
-    sign = -1
+    sign = -1n
     str = str.slice(1)
   } else if (str[0] === '+') {
-    sign = 1
+    sign = 1n
     str = str.slice(1)
   }
   let pointI = str.indexOf('.')
   if (pointI !== -1) {
     let subStr = str.replace(/(^0?\.0*)|(\.)/, '')
     if (subStr) {
-      mantissa = subStr
+      mantissa = sign * BigInt(subStr)
       // str.length must to be < Number.MAX_SAFE_INTEGER
-      exponent = { sign: -1, value: String(str.length - 1 - pointI) }
+      exponent = -(str.length - 1 - pointI)
     } else {
       // 0
-      mantissa = '0'
-      exponent = { sign: 1, value: '0' }
+      mantissa = BigInt('0')
+      exponent = 0
     }
   } else {
     // int
-    mantissa = str
-    exponent = { sign: 1, value: '0' }
+    mantissa = sign * BigInt(str)
+    exponent = 0
   }
 
-  return { sign, mantissa, exponent }
+  return { mantissa, exponent }
 }

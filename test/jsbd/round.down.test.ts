@@ -1,4 +1,4 @@
-import { JSBD } from '../../dist/bigint/jsbd.js'
+import { JSBD } from '../../src/jsbd'
 
 // BigDecimal = 0
 test('"0.000" round down "-1"', () => {

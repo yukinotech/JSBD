@@ -1,4 +1,4 @@
-import { isLiteral } from '../dist/utils.js'
+import { isLiteral } from '../../src/utils'
 
 // legal literal
 // +0

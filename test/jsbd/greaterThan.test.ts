@@ -1,4 +1,4 @@
-import { JSBD } from '../../dist/bigint/jsbd.js'
+import { JSBD } from '../../src/jsbd'
 
 test('"100" greaterThan "100.000"', () => {
   let a = JSBD.BigDecimal('100')

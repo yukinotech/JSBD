@@ -1,4 +1,4 @@
-import { JSBD } from '../../../dist/bigint/jsbd.js'
+import { JSBD } from '../../src/jsbd'
 
 test('"0" toString', () => {
   let a = JSBD.BigDecimal('0.')
@@ -33,6 +33,11 @@ test('"123800" toString', () => {
 test('"123.456" toString', () => {
   let a = JSBD.BigDecimal(123.456)
   expect(a.toString()).toBe('123.456')
+})
+
+test('"123n" toString', () => {
+  let a = JSBD.BigDecimal(123n)
+  expect(a.toString()).toBe('123')
 })
 
 test('"123.096" toString', () => {
