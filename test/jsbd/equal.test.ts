@@ -29,3 +29,9 @@ test('"20000000" isEqual "2"', () => {
   let b = JSBD.BigDecimal('2')
   expect(JSBD.equal(a, b)).toBeFalsy()
 })
+
+test('"2e4" isEqual "2e6"', () => {
+  let a = JSBD.BigDecimal('2e4')
+  let b = JSBD.BigDecimal('2e6')
+  expect(JSBD.equal(a, b)).toBeFalsy()
+})

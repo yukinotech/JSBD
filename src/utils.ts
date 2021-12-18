@@ -70,5 +70,24 @@ export function getAbs(v: bigint) {
 
 // judge if string has style like "143e-23"
 export function isSN(str: string) {
-  return true
+  if (
+    str.match(
+      /^(-|\+)?((0\.[0-9]*)|([1-9][0-9]*\.[0-9]*)|(\.[0-9]+)|([1-9][0-9]*)|(0))[eE][-+]?(([1-9][0-9]*)|0)$/
+    )
+  ) {
+    return true
+  } else {
+    return false
+  }
+}
+
+export function parseSN(str: string) {
+  let before: string, after: string
+  if (str.indexOf('e') !== -1) {
+    ;[before, after] = str.split('e')
+  } else {
+    ;[before, after] = str.split('E')
+  }
+  let { exponent, mantissa } = parseLiteral(before)
+  return { exponent: exponent + Number(after), mantissa }
 }

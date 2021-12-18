@@ -1,4 +1,4 @@
-import { isLiteral, parseLiteral, isSN } from './utils'
+import { isLiteral, parseLiteral, isSN, parseSN } from './utils'
 
 export class Decimal {
   mantissa!: bigint
@@ -19,6 +19,9 @@ export class Decimal {
           this.exponent = exponent
         } else if (isSN(intVal)) {
           // scientific notation style like 115e-10
+          let { mantissa, exponent } = parseSN(intVal)
+          this.mantissa = mantissa
+          this.exponent = exponent
         } else {
           throw new Error('string value must be legal number')
         }
@@ -43,11 +46,19 @@ export class Decimal {
       return this.mantissa.toString(10) + zero
     } else {
       let offset = this.exponent * -1
-      let str = this.mantissa.toString(10)
+      let str: string
+      // make str without sign
+      if (this.mantissa > 0) {
+        str = this.mantissa.toString(10)
+      } else {
+        str = (this.mantissa * -1n).toString(10)
+      }
       if (str.length > offset) {
         let minus = str.length - offset
         let withZeroStr = str.slice(0, minus) + '.' + str.slice(minus)
-        return withZeroStr.replace(/\.?0*$/, '')
+        return this.mantissa > 0
+          ? withZeroStr.replace(/\.?0*$/, '')
+          : '-' + withZeroStr.replace(/\.?0*$/, '')
       } else {
         let minus = offset - str.length
         let addZero = '0.'
@@ -56,7 +67,9 @@ export class Decimal {
           minus--
         }
         let withZeroStr = addZero + str
-        return withZeroStr.replace(/\.?0*$/, '')
+        return this.mantissa > 0
+          ? withZeroStr.replace(/\.?0*$/, '')
+          : '-' + withZeroStr.replace(/\.?0*$/, '')
       }
     }
   }

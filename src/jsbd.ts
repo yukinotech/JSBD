@@ -88,13 +88,13 @@ export class JSBD {
       throw new Error(`maximumFractionDigits should be integer`)
     }
     let dig = maximumFractionDigits
-    if (dig === undefined) return a
-    if (a.mantissa === 0n) return a
+    if (dig === undefined) return snDecimal(a.mantissa, a.exponent)
+    if (a.mantissa === 0n) return snDecimal(a.mantissa, a.exponent)
     // 取反
     dig = -dig
     if (roundingMode === 'up' || roundingMode === 'down') {
       if (a.exponent >= dig) {
-        return a
+        return snDecimal(a.mantissa, a.exponent)
       } else {
         // 缩放 maximumFractionDigits
         let minus = dig - a.exponent
@@ -120,7 +120,7 @@ export class JSBD {
       }
     } else {
       if (a.exponent >= dig) {
-        return a
+        return snDecimal(a.mantissa, a.exponent)
       } else {
         let minus = dig - a.exponent
         let div = 10n ** BigInt(minus)
@@ -129,12 +129,12 @@ export class JSBD {
         let subLeft = a.mantissa % subDiv
         let dependValue = (left - subLeft) / subDiv
         let withZero = a.mantissa - left
-        console.log('div', div)
-        console.log('subDiv', subDiv)
-        console.log('left', left)
-        console.log('subLeft', subLeft)
-        console.log('withZero', withZero)
-        console.log('dependValue', dependValue)
+        // console.log('div', div)
+        // console.log('subDiv', subDiv)
+        // console.log('left', left)
+        // console.log('subLeft', subLeft)
+        // console.log('withZero', withZero)
+        // console.log('dependValue', dependValue)
         if (roundingMode === 'half up') {
           if (getAbs(dependValue) > 4) {
             if (a.mantissa > 0) {
