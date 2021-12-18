@@ -183,12 +183,6 @@ export class JSBD {
         let subLeft = a.mantissa % subDiv
         let dependValue = (left - subLeft) / subDiv
         let withZero = a.mantissa - left
-        // console.log('div', div)
-        // console.log('subDiv', subDiv)
-        // console.log('left', left)
-        // console.log('subLeft', subLeft)
-        // console.log('withZero', withZero)
-        // console.log('dependValue', dependValue)
         if (roundingMode === 'half up') {
           if (getAbs(dependValue) > 4) {
             if (a.mantissa > 0) {
