@@ -7,7 +7,58 @@ export class JSBD {
     return new Decimal(intVal)
   }
   // add => a + b
-  static add(a: Decimal, b: Decimal) {}
+  static add(a: Decimal, b: Decimal, option?: RoundOption): Decimal {
+    if (a.exponent >= b.exponent) {
+      let minus = a.exponent - b.exponent
+      let newMantissa = a.mantissa * 10n ** BigInt(minus) + b.mantissa
+      let sn = snDecimal(newMantissa, b.exponent)
+      if (option) {
+        return JSBD.round(sn, option)
+      } else {
+        return sn
+      }
+    } else {
+      let minus = b.exponent - a.exponent
+      let newMantissa = b.mantissa * 10n ** BigInt(minus) + a.mantissa
+      let sn = snDecimal(newMantissa, a.exponent)
+      if (option) {
+        return JSBD.round(sn, option)
+      } else {
+        return sn
+      }
+    }
+  }
+  // subtract => a - b
+  static subtract(a: Decimal, b: Decimal, option?: RoundOption): Decimal {
+    if (a.exponent >= b.exponent) {
+      let minus = a.exponent - b.exponent
+      let newMantissa = a.mantissa * 10n ** BigInt(minus) - b.mantissa
+      let sn = snDecimal(newMantissa, b.exponent)
+      if (option) {
+        return JSBD.round(sn, option)
+      } else {
+        return sn
+      }
+    } else {
+      let minus = b.exponent - a.exponent
+      let newMantissa = a.mantissa - b.mantissa * 10n ** BigInt(minus)
+      let sn = snDecimal(newMantissa, a.exponent)
+      if (option) {
+        return JSBD.round(sn, option)
+      } else {
+        return sn
+      }
+    }
+  }
+  // multiply => a * b
+  static multiply(a: Decimal, b: Decimal, option?: RoundOption): Decimal {
+    let sn = snDecimal(a.mantissa * b.mantissa, a.exponent + b.exponent)
+    if (option) {
+      return JSBD.round(sn, option)
+    } else {
+      return sn
+    }
+  }
   // equal => a === b
   static equal(a: Decimal, b: Decimal): boolean {
     let minus: number
@@ -66,7 +117,10 @@ export class JSBD {
       roundingMode: 'half up',
     }
   ): Decimal {
-    let { roundingMode, maximumFractionDigits } = options
+    // @ts-ignore
+    const roundingMode = options?.roundingMode
+    // @ts-ignore
+    const maximumFractionDigits = options?.maximumFractionDigits
     // params type check
     // check roundingMode
     if (
@@ -87,7 +141,7 @@ export class JSBD {
     ) {
       throw new Error(`maximumFractionDigits should be integer`)
     }
-    let dig = maximumFractionDigits
+    let dig = maximumFractionDigits as number
     if (dig === undefined) return snDecimal(a.mantissa, a.exponent)
     if (a.mantissa === 0n) return snDecimal(a.mantissa, a.exponent)
     // 取反
@@ -169,8 +223,9 @@ export class JSBD {
             // dependValue === 5
             let superDiv = 10n ** BigInt(minus + 1)
             let superLeft = a.mantissa % superDiv
+            // evenDependValue can be negative or positive
             let evenDependValue = (superLeft - left) / div
-            if (evenDependValue % 1n !== 0n) {
+            if (evenDependValue % 2n !== 0n) {
               if (a.mantissa > 0) {
                 return snDecimal(withZero + div, a.exponent)
               } else {

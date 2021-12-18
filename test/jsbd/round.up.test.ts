@@ -52,6 +52,16 @@ test('"101" round up "-4"', () => {
   ).toBe('10000')
 })
 
+test('"12000e-2" round up "-1"', () => {
+  let a = JSBD.BigDecimal('12000e-2')
+  expect(
+    JSBD.round(a, {
+      roundingMode: 'up',
+      maximumFractionDigits: -1,
+    }).toString()
+  ).toBe('120')
+})
+
 // BigDecimal > 0 && maximumFractionDigits >= 0
 
 test('"101.6987" round up "1"', () => {
