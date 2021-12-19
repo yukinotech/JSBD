@@ -6,6 +6,8 @@ This is a polyfill for BigDecimal , which implement tc39-bigDecimal proposal htt
 
 And some result of the method referred Java.math.BigDecimal
 
+typescript and 100% case coverage
+
 ## install
 
 ```
@@ -82,6 +84,13 @@ operation.
   object described on [JSBD.round](#bigdecimalroundvalue--options). If it's not given, no rounding
   operation will be applied, and the exact result will be returned.
 
+```javascript
+let a = JSBD.BigDecimal('1.25')
+let b = JSBD.BigDecimal('644e-2')
+JSBD.add(a, b).toString()
+// '7.69'
+```
+
 ### JSBD.subtract(lhs, rhs [, options])
 
 This function can be used as an alternative to `-` binary operator that allows rounding the result after the
@@ -95,6 +104,13 @@ operation.
   object described on [JSBD.round](#bigdecimalroundvalue--options). If it's not given, no rounding
   operation will be applied, and the exact result will be returned.
 
+```javascript
+let a = JSBD.BigDecimal('1.25')
+let b = JSBD.BigDecimal('644e-2')
+JSBD.subtract(a, b).toString()
+// '-5.19'
+```
+
 ### JSBD.multiply(lhs, rhs [, options])
 
 This function can be used as an alternative to `*` binary operator that allows rounding the result after the
@@ -106,6 +122,13 @@ on `options` object, if given. `options` is an options bag that configures the r
 - `options`: It is an object indicating how the round operation should be performed. It's the same options bag
   object described on [JSBD.round](#bigdecimalroundvalue--options). If it's not given, no rounding
   operation will be applied, and the exact result will be returned.
+
+```javascript
+let a = JSBD.BigDecimal('12')
+let b = JSBD.BigDecimal('1.2')
+JSBD.multiply(a, b).toString()
+// '14.4'
+```
 
 ### JSBD.divide(lhs, rhs, options)
 
@@ -125,6 +148,17 @@ because this is the only operation where some results can't be represented as a 
 we divide 1m by 3m) if we don't round. With the requirement to describe how we should round the result, it's
 then possible to return a correct result for any given input.
 
+```javascript
+let a = JSBD.BigDecimal('0.2')
+let b = JSBD.BigDecimal('3')
+
+JSBD.divide(a, b, {
+  maximumFractionDigits: 4,
+  roundingMode: 'half even',
+}).toString()
+// '0.0067'
+```
+
 ### JSBD.remainder(lhs, rhs [, options])
 
 This function can be used as an alternative to `%` binary operator that allows rounding the result after the
@@ -136,6 +170,10 @@ object, if given. `options` is an options bag that configures the rounding of th
 - `options`: It is an object indicating how the round operation should be performed. It's the same options bag
   object described on [JSBD.round](#bigdecimalroundvalue--options). If it's not given, no rounding
   operation will be applied, and the exact result will be returned.
+
+```javascript
+// to do
+```
 
 ### JSBD.pow(number, power [, options])
 
@@ -149,6 +187,13 @@ positive integer.
 - `options`: It is an object indicating how the round operation should be performed. It's the same options bag
   object described on [JSBD.round](#bigdecimalroundvalue--options). If it's not given, no rounding
   operation will be applied, and the exact result will be returned.
+
+```javascript
+let a = JSBD.BigDecimal('0.2')
+let b = 3
+JSBD.pow(a, b).toString()
+// '0.008'
+```
 
 ## BigDecimal prototype
 
@@ -170,6 +215,7 @@ optional parameter `digits` that defines the number of digits after decimal poin
 semantics of `Number.prototype.toFixed`.
 
 ```js
+// to do
 let v = JSBD.BigDecimal('100.456')
 console.log(v.toFixed(2)) // prints 100.46
 let v = JSBD.BigDecimal('0')
@@ -183,6 +229,7 @@ parameter `fractionDigits` that defines the number of digits after decimal point
 semantics of `Number.prototype.toExponential`.
 
 ```js
+// to do
 let v = JSBD.BigDecimal('1010')
 console.log(v.toExponential(2)) // prints 1.01e+3
 ```
@@ -193,13 +240,12 @@ This function returns a string that represents the `BigDecimal` in the specified
 same semantics of `Number.prototype.toPrecision`.
 
 ```js
+// to do
 let v = JSBD.BigDecimal('1.22')
 console.log(v.toPrecision()) // prints 111.22
 console.log(v.toPrecision(4)) // 111.2
 console.log(v.toPrecision(2)) //1.1e+2
 ```
-
-## install
 
 ## for developer
 
