@@ -4,6 +4,15 @@
 
 This is a polyfill for BigDecimal , which implement tc39-bigDecimal proposal https://github.com/tc39/proposal-decimal
 
+And some result of the method referred Java.math.BigDecimal
+
+## install
+
+```
+npm install jsbd
+// yarn add jsbd
+```
+
 ## usage
 
 ### JSBD.BigDecimal
@@ -11,6 +20,8 @@ This is a polyfill for BigDecimal , which implement tc39-bigDecimal proposal htt
 use `JSBD.BigDecimal` to init a BigDecimal object
 
 ```js
+import JSBD from 'jsbd'
+
 let a = JSBD.BigDecimal(3) // returns 3m
 let b = JSBD.BigDecimal('345') // returns 345m
 let c = JSBD.BigDecimal('115e-10') // returns 0.0000000115m
@@ -58,7 +69,7 @@ a = JSBD.round(0.31m, { roundingMode: 'up', maximumFractionDigits: 1 })
 assert(a, 0.4m)
 ```
 
-### BigDecimal.add(lhs, rhs [, options])
+### JSBD.add(lhs, rhs [, options])
 
 This function can be used as an alternative to `+` binary operator that allows rounding the result after the
 calculation. It adds `rhs` and `lhs` and returns the result of such operation, applying the rounding rules
@@ -68,7 +79,7 @@ operation.
 - `lhs`: A `BigDecimal` value. If the value is from another type, it throws `TypeError`.
 - `rhs`: A `BigDecimal` value. If the value is from another type, it throws `TypeError`.
 - `options`: It is an object indicating how the round operation should be performed. It's the same options bag
-  object described on [BigDecimal.round](#bigdecimalroundvalue--options). If it's not given, no rounding
+  object described on [JSBD.round](#bigdecimalroundvalue--options). If it's not given, no rounding
   operation will be applied, and the exact result will be returned.
 
 ### JSBD.subtract(lhs, rhs [, options])
@@ -81,7 +92,7 @@ operation.
 - `lhs`: A `BigDecimal` value. If the value is from another type, it throws `TypeError`.
 - `rhs`: A `BigDecimal` value. If the value is from another type, it throws `TypeError`.
 - `options`: It is an object indicating how the round operation should be performed. It's the same options bag
-  object described on [BigDecimal.round](#bigdecimalroundvalue--options). If it's not given, no rounding
+  object described on [JSBD.round](#bigdecimalroundvalue--options). If it's not given, no rounding
   operation will be applied, and the exact result will be returned.
 
 ### JSBD.multiply(lhs, rhs [, options])
@@ -93,7 +104,7 @@ on `options` object, if given. `options` is an options bag that configures the r
 - `lhs`: A `BigDecimal` value. If the value is from another type, it throws `TypeError`.
 - `rhs`: A `BigDecimal` value. If the value is from another type, it throws `TypeError`.
 - `options`: It is an object indicating how the round operation should be performed. It's the same options bag
-  object described on [BigDecimal.round](#bigdecimalroundvalue--options). If it's not given, no rounding
+  object described on [JSBD.round](#bigdecimalroundvalue--options). If it's not given, no rounding
   operation will be applied, and the exact result will be returned.
 
 ### JSBD.divide(lhs, rhs, options)
@@ -105,7 +116,7 @@ bag that configures the rounding of this operation.
 - `lhs`: A `BigDecimal` value. If the value is from another type, it throws `TypeError`.
 - `rhs`: A `BigDecimal` value. If the value is from another type, it throws `TypeError`.
 - `options`: It is an object indicating how the round operation should be performed. It's the same options bag
-  object described on [BigDecimal.round](#bigdecimalroundvalue--options). If it's not given, no rounding
+  object described on [JSBD.round](#bigdecimalroundvalue--options). If it's not given, no rounding
   operation will be applied, and the exact result will be returned. If the result can't be represented (due to a
   non-terminating decimal expansion), it throws `TypeError`.
 
@@ -123,7 +134,7 @@ object, if given. `options` is an options bag that configures the rounding of th
 - `lhs`: A `BigDecimal` value. If the value is from another type, it throws `TypeError`.
 - `rhs`: A `BigDecimal` value. If the value is from another type, it throws `TypeError`.
 - `options`: It is an object indicating how the round operation should be performed. It's the same options bag
-  object described on [BigDecimal.round](#bigdecimalroundvalue--options). If it's not given, no rounding
+  object described on [JSBD.round](#bigdecimalroundvalue--options). If it's not given, no rounding
   operation will be applied, and the exact result will be returned.
 
 ### JSBD.pow(number, power [, options])
@@ -136,7 +147,7 @@ positive integer.
 - `power`: A positive integer `Number` value. If the value is from another type or not a positive integer, it
   throws `RangeError`.
 - `options`: It is an object indicating how the round operation should be performed. It's the same options bag
-  object described on [BigDecimal.round](#bigdecimalroundvalue--options). If it's not given, no rounding
+  object described on [JSBD.round](#bigdecimalroundvalue--options). If it's not given, no rounding
   operation will be applied, and the exact result will be returned.
 
 ## BigDecimal prototype
@@ -159,7 +170,7 @@ optional parameter `digits` that defines the number of digits after decimal poin
 semantics of `Number.prototype.toFixed`.
 
 ```js
-let v = JSBD.BigDecimal('100.456m')
+let v = JSBD.BigDecimal('100.456')
 console.log(v.toFixed(2)) // prints 100.46
 let v = JSBD.BigDecimal('0')
 console.log(v.toFixed(2)) // prints 0.00

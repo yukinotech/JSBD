@@ -1,5 +1,4 @@
 import { DecimalSign, Exponent } from './type'
-import { Decimal } from './decimal'
 
 // judge if string has style like "143.09"
 export function isLiteral(str: string) {
@@ -46,14 +45,6 @@ export function parseLiteral(str: string) {
   }
 
   return { mantissa, exponent }
-}
-
-// build a decimal form scientific notation
-export function snDecimal(mantissa: bigint, exponent: number) {
-  let v = new Decimal('0')
-  v.exponent = exponent
-  v.mantissa = mantissa
-  return v
 }
 
 // judge a params is an integer

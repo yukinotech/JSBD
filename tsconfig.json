@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
-    "outDir": "./dist", // 指定输出目录
+    "outDir": "./build", // 指定输出目录
+    "declarationDir": "./dist", // 指定输出目录
     "rootDir": "./src", // 指定输出文件目录(用于输出)，用于控制输出目录结构
     "target": "es2020",
     "module": "es2020",
     "noImplicitAny": true,
     "sourceMap": false,
+    "declaration": true,
+    "removeComments": true,
     "strict": true,
     "skipLibCheck": true,
     "esModuleInterop": true

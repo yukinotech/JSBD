@@ -194,11 +194,40 @@ test('"-901.34" round up with no option', () => {
   expect(JSBD.round(a).toString()).toBe('-901.34')
 })
 
-test('"1.34" round up with no option', () => {
+test('"1.34" round up with roundingMode', () => {
   let a = JSBD.BigDecimal('1.34')
   expect(
     JSBD.round(a, {
       roundingMode: 'up',
     }).toString()
   ).toBe('1.34')
+})
+
+test('"1.34" round up with maximumFractionDigits', () => {
+  let a = JSBD.BigDecimal('1.34')
+  expect(
+    JSBD.round(a, {
+      maximumFractionDigits: 2,
+    }).toString()
+  ).toBe('1.34')
+})
+
+test('"1.34" round up with wrong param', () => {
+  let a = JSBD.BigDecimal('1.34')
+  expect(() => {
+    JSBD.round(a, {
+      // @ts-ignore
+      roundingMode: '4355',
+    }).toString()
+  }).toThrow()
+})
+
+test('"1.34" round up with wrong param', () => {
+  let a = JSBD.BigDecimal('1.34')
+  expect(() => {
+    JSBD.round(a, {
+      // @ts-ignore
+      maximumFractionDigits: '4355',
+    }).toString()
+  }).toThrow()
 })

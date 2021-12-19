@@ -74,3 +74,11 @@ export class Decimal {
     }
   }
 }
+
+// build a decimal form scientific notation
+export function snDecimal(mantissa: bigint, exponent: number) {
+  let v = new Decimal('0')
+  v.exponent = exponent
+  v.mantissa = mantissa
+  return v
+}

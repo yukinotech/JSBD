@@ -1,6 +1,6 @@
 import { DecimalIntVal, RoundOption } from './type'
-import { Decimal } from './decimal'
-import { snDecimal, isInteger, getAbs } from './utils'
+import { Decimal, snDecimal } from './decimal'
+import { isInteger, getAbs } from './utils'
 
 export class JSBD {
   static BigDecimal(intVal: DecimalIntVal) {
@@ -59,6 +59,91 @@ export class JSBD {
       return sn
     }
   }
+  // pow => a ^ b
+  static pow(a: Decimal, power: number, option?: RoundOption): Decimal {
+    if (!(isInteger(power) && power > 0)) {
+      throw new RangeError('power must be a positive number')
+    }
+    let sn = a
+    power--
+    while (power > 0) {
+      sn = JSBD.multiply(sn, a)
+      power--
+    }
+
+    if (option) {
+      return JSBD.round(sn, option)
+    } else {
+      return sn
+    }
+  }
+  // divide => a / b
+  static divide(a: Decimal, b: Decimal, option: RoundOption): Decimal {
+    // @ts-ignore
+    const maximumFractionDigits = option?.maximumFractionDigits as number
+    if (!isInteger(maximumFractionDigits)) {
+      throw new TypeError(
+        'divide result maximumFractionDigits must be an integer'
+      )
+    }
+    if (b.mantissa === 0n) {
+      throw new Error(`0 can't be divided`)
+    }
+    if (a.mantissa === 0n) {
+      return JSBD.BigDecimal('0')
+    }
+    let res = a.mantissa / b.mantissa
+    let minus = a.exponent - b.exponent
+    let dig = -maximumFractionDigits
+    if (minus < dig) {
+      let sn = snDecimal(res, minus)
+      return JSBD.round(sn, option)
+    } else {
+      let toDivideTimes = minus - dig + 1
+      // all to be positive
+      let aPositive = a.mantissa > 0 ? a.mantissa : a.mantissa * -1n
+      let bPositive = b.mantissa > 0 ? b.mantissa : b.mantissa * -1n
+      let left = aPositive % bPositive
+      if (left === 0n) {
+        let sn = snDecimal(res, minus)
+        return JSBD.round(sn, option)
+      }
+      if (
+        (a.mantissa > 0 && b.mantissa > 0) ||
+        (a.mantissa < 0 && b.mantissa < 0)
+      ) {
+        while (toDivideTimes > 0) {
+          // new value in the position of result
+          let left10 = left * 10n
+          let newValue = left10 / bPositive
+          left = left10 % bPositive
+          res = res * 10n + newValue
+          minus--
+          toDivideTimes--
+          if (left === 0n) {
+            break
+          }
+        }
+        let sn = snDecimal(res, minus)
+        return JSBD.round(sn, option)
+      } else {
+        while (toDivideTimes > 0) {
+          // new value in the position of result
+          let left10 = left * 10n
+          let newValue = left10 / bPositive
+          left = left10 % bPositive
+          res = res * 10n - newValue
+          minus--
+          toDivideTimes--
+          if (left === 0n) {
+            break
+          }
+        }
+        let sn = snDecimal(res, minus)
+        return JSBD.round(sn, option)
+      }
+    }
+  }
   // equal => a === b
   static equal(a: Decimal, b: Decimal): boolean {
     let minus: number
@@ -111,14 +196,9 @@ export class JSBD {
     return !JSBD.greaterThan(a, b)
   }
   // round => BigDecimal.round
-  static round(
-    a: Decimal,
-    options: RoundOption = {
-      roundingMode: 'half up',
-    }
-  ): Decimal {
+  static round(a: Decimal, options?: RoundOption): Decimal {
     // @ts-ignore
-    const roundingMode = options?.roundingMode
+    let roundingMode = options?.roundingMode
     // @ts-ignore
     const maximumFractionDigits = options?.maximumFractionDigits
     // params type check
@@ -128,7 +208,8 @@ export class JSBD {
       roundingMode !== 'down' &&
       roundingMode !== 'half down' &&
       roundingMode !== 'half up' &&
-      roundingMode !== 'half even'
+      roundingMode !== 'half even' &&
+      roundingMode !== undefined
     ) {
       throw new Error(
         `roundingMode should be one of 'down' | 'half down' | 'half up' | 'half even' | 'up'`
@@ -142,8 +223,15 @@ export class JSBD {
       throw new Error(`maximumFractionDigits should be integer`)
     }
     let dig = maximumFractionDigits as number
-    if (dig === undefined) return snDecimal(a.mantissa, a.exponent)
-    if (a.mantissa === 0n) return snDecimal(a.mantissa, a.exponent)
+    if (dig === undefined) {
+      return snDecimal(a.mantissa, a.exponent)
+    }
+    if (roundingMode === undefined) {
+      roundingMode = 'half up'
+    }
+    if (a.mantissa === 0n) {
+      return snDecimal(a.mantissa, a.exponent)
+    }
     // 取反
     dig = -dig
     if (roundingMode === 'up' || roundingMode === 'down') {
