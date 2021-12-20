@@ -48,7 +48,7 @@ export function parseLiteral(str: string) {
 }
 
 // judge a params is an integer
-export function isInteger(obj: any) {
+export function isInteger(obj: any): obj is number {
   return typeof obj === 'number' && obj % 1 === 0
 }
 
