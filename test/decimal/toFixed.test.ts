@@ -41,6 +41,11 @@ test('"112.5" toFixed', () => {
   expect(a.toFixed()).toBe('113')
 })
 
+test('"112.999" toFixed', () => {
+  let a = new Decimal('112.999')
+  expect(a.toFixed()).toBe('113')
+})
+
 test('toFixed error params', () => {
   let a = new Decimal('112.5')
   expect(() => {

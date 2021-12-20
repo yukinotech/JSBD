@@ -235,7 +235,6 @@ parameter `fractionDigits` that defines the number of digits after decimal point
 semantics of `Number.prototype.toExponential`.
 
 ```js
-// to do
 let v = JSBD.BigDecimal('1010')
 console.log(v.toExponential(2)) // prints 1.01e+3
 ```
