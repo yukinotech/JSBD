@@ -11,8 +11,10 @@ typescript and 100% case coverage
 ## install
 
 ```
+// use npm
 npm install jsbd
-// yarn add jsbd
+// or use yarn
+yarn add jsbd
 ```
 
 ## usage
@@ -172,7 +174,12 @@ object, if given. `options` is an options bag that configures the rounding of th
   operation will be applied, and the exact result will be returned.
 
 ```javascript
-// to do
+let a = JSBD.BigDecimal('2')
+let b = JSBD.BigDecimal('0.3')
+
+// 2 % 0.3 => 0.2
+JSBD.remainder(a, b).toString()
+// '0.2'
 ```
 
 ### JSBD.pow(number, power [, options])
@@ -215,7 +222,6 @@ optional parameter `digits` that defines the number of digits after decimal poin
 semantics of `Number.prototype.toFixed`.
 
 ```js
-// to do
 let v = JSBD.BigDecimal('100.456')
 console.log(v.toFixed(2)) // prints 100.46
 let v = JSBD.BigDecimal('0')
