@@ -128,7 +128,7 @@ export class Decimal {
         // to half up
         let v = JSBD.round(snDecimal(this.mantissa, this.exponent), {
           maximumFractionDigits:
-            fractionDigits + this.exponent - (str.length - offset - 1),
+            fractionDigits - this.exponent - (str.length - offset - 1),
           roundingMode: 'half up',
         })
         mantissa = v.mantissa
@@ -140,9 +140,6 @@ export class Decimal {
       // to format
 
       let vStr = mantissa.toString(10)
-      console.log('vStr', vStr)
-      console.log('mantissa', mantissa)
-      console.log('exponent', exponent)
       let vOffset = 0
       if (mantissa < 0) {
         vOffset = 1
@@ -162,21 +159,38 @@ export class Decimal {
           noZeroVStr +
           point +
           'e' +
-          `${finalExponent === 0 ? '+0' : finalExponent.toString()}`
+          `${(() => {
+            if (finalExponent === 0) {
+              return '+0'
+            } else if (finalExponent > 0) {
+              return '+' + finalExponent.toString()
+            } else {
+              return finalExponent.toString()
+            }
+          })()}`
         )
       } else {
-        let beforePoint = noZeroVStr.slice(0, offset)
+        let beforePoint = noZeroVStr.slice(0, offset + 1)
         let afterPoint = noZeroVStr.slice(offset + 1)
-        let point = '.'
+        let zero = ''
         for (let i = 0; i < fractionDigits - afterPoint.length; i++) {
-          point += '0'
+          zero += '0'
         }
         return (
           beforePoint +
-          point +
+          '.' +
           afterPoint +
+          zero +
           'e' +
-          `${finalExponent === 0 ? '+0' : finalExponent.toString()}`
+          `${(() => {
+            if (finalExponent === 0) {
+              return '+0'
+            } else if (finalExponent > 0) {
+              return '+' + finalExponent.toString()
+            } else {
+              return finalExponent.toString()
+            }
+          })()}`
         )
       }
     } else {
