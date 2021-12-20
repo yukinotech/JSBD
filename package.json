@@ -1,6 +1,6 @@
 {
   "name": "jsbd",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/index.js",
   "module": "dist/index.modern.mjs",
   "unpkg": "dist/index.umd.js",
@@ -33,6 +33,7 @@
     "pretty-quick": "^3.1.2",
     "rimraf": "^3.0.2",
     "rollup": "^2.61.1",
+    "rollup-plugin-terser": "^7.0.2",
     "ts-jest": "^27.1.2",
     "typescript": "^4.5.3"
   },

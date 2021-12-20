@@ -144,6 +144,17 @@ export class JSBD {
       }
     }
   }
+  // remainder => a % b
+  static remainder(a: Decimal, b: Decimal, option?: RoundOption): Decimal {
+    let v = JSBD.divide(a, b, {
+      maximumFractionDigits: 0,
+      roundingMode: 'down',
+    })
+    if (option) {
+      return JSBD.round(JSBD.subtract(a, JSBD.multiply(v, b), option))
+    }
+    return JSBD.subtract(a, JSBD.multiply(v, b))
+  }
   // equal => a === b
   static equal(a: Decimal, b: Decimal): boolean {
     let minus: number

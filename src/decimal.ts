@@ -1,4 +1,5 @@
-import { isLiteral, parseLiteral, isSN, parseSN } from './utils'
+import { isLiteral, parseLiteral, isSN, parseSN, isInteger } from './utils'
+import { JSBD } from './jsbd'
 
 export class Decimal {
   mantissa!: bigint
@@ -71,6 +72,34 @@ export class Decimal {
           ? withZeroStr.replace(/\.?0*$/, '')
           : '-' + withZeroStr.replace(/\.?0*$/, '')
       }
+    }
+  }
+  toFixed(digits?: number) {
+    if ((isInteger(digits) && digits >= 0) || digits === undefined) {
+      if (digits === undefined) {
+        digits = 0
+      }
+      let v = JSBD.round(snDecimal(this.mantissa, this.exponent), {
+        maximumFractionDigits: digits,
+        roundingMode: 'half up',
+      })
+      let str = v.toString()
+      if (str.indexOf('.') !== -1) {
+        let [before, after] = str.split('.')
+        for (let i = 0; i < digits - after.length; i++) {
+          str += '0'
+        }
+        return str
+      } else {
+        if (digits === 0) return str
+        str += '.'
+        for (let i = 0; i < digits; i++) {
+          str += '0'
+        }
+        return str
+      }
+    } else {
+      throw new Error('param digits must be a integer >=0 ')
     }
   }
 }
