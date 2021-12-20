@@ -102,6 +102,87 @@ export class Decimal {
       throw new Error('param digits must be a integer >=0 ')
     }
   }
+  toExponential(fractionDigits?: number) {
+    if (
+      (isInteger(fractionDigits) && fractionDigits >= 0) ||
+      fractionDigits === undefined
+    ) {
+      if (fractionDigits === undefined) {
+        fractionDigits = 0
+      }
+      if (this.mantissa === 0n) {
+        if (fractionDigits === 0) return '0e+0'
+        let rtn = '0.'
+        for (let i = 0; i < fractionDigits; i++) {
+          rtn += '0'
+        }
+        return rtn + 'e+0'
+      }
+      let str = this.mantissa.toString(10)
+      let offset = 0
+      if (this.mantissa < 0) {
+        offset = 1
+      }
+      let mantissa, exponent
+      if (fractionDigits < str.length - offset - 1) {
+        // to half up
+        let v = JSBD.round(snDecimal(this.mantissa, this.exponent), {
+          maximumFractionDigits:
+            fractionDigits + this.exponent - (str.length - offset - 1),
+          roundingMode: 'half up',
+        })
+        mantissa = v.mantissa
+        exponent = v.exponent
+      } else {
+        mantissa = this.mantissa
+        exponent = this.exponent
+      }
+      // to format
+
+      let vStr = mantissa.toString(10)
+      console.log('vStr', vStr)
+      console.log('mantissa', mantissa)
+      console.log('exponent', exponent)
+      let vOffset = 0
+      if (mantissa < 0) {
+        vOffset = 1
+      }
+      // get final exponent
+      let finalExponent = exponent + vStr.length - 1 - vOffset
+
+      // add point and add zero
+      let noZeroVStr = vStr.replace(/0*$/, '')
+      if (noZeroVStr.length - offset === 1) {
+        // eg: 9 * 10^6
+        let point = fractionDigits === 0 ? '' : '.'
+        for (let i = 0; i < fractionDigits; i++) {
+          point += '0'
+        }
+        return (
+          noZeroVStr +
+          point +
+          'e' +
+          `${finalExponent === 0 ? '+0' : finalExponent.toString()}`
+        )
+      } else {
+        let beforePoint = noZeroVStr.slice(0, offset)
+        let afterPoint = noZeroVStr.slice(offset + 1)
+        let point = '.'
+        for (let i = 0; i < fractionDigits - afterPoint.length; i++) {
+          point += '0'
+        }
+        return (
+          beforePoint +
+          point +
+          afterPoint +
+          'e' +
+          `${finalExponent === 0 ? '+0' : finalExponent.toString()}`
+        )
+      }
+    } else {
+      throw new Error('param fractionDigits must be a integer >=0 ')
+    }
+  }
 }
 
 // build a decimal form scientific notation
