@@ -247,7 +247,7 @@ same semantics of `Number.prototype.toPrecision`.
 ```js
 let v = JSBD.BigDecimal('111.22')
 console.log(v.toPrecision()) // prints 111.22
-console.log(v.toPrecision(4)) // 1.112e+2
+console.log(v.toPrecision(4)) // 111.2
 console.log(v.toPrecision(2)) //1.1e+2
 ```
 

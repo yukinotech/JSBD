@@ -268,12 +268,9 @@ export class Decimal {
         let absExponent = -1 * exponent
         if (precisionStr.length - offset > absExponent) {
           // minusFlag >= 0
-          let minusFlag = precisionStr.length - offset - absExponent - 1
+          let insert = precisionStr.length - absExponent
           return (
-            precisionStr.slice(0, offset + 1) +
-            '.' +
-            precisionStr.slice(offset + 1) +
-            `${minusFlag === 0 ? '' : 'e+' + minusFlag.toString()}`
+            precisionStr.slice(0, insert) + '.' + precisionStr.slice(insert)
           )
         } else {
           let zero = ''

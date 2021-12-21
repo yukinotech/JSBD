@@ -82,13 +82,13 @@ test('"111.456" toPrecision 1', () => {
 test('"111.456" toPrecision 4', () => {
   let a = new Decimal('111.456')
   let v = a.toPrecision(4)
-  expect(v).toBe('1.115e+2')
+  expect(v).toBe('111.5')
 })
 
 test('"56.12" toPrecision 6', () => {
   let a = new Decimal('56.12')
   let v = a.toPrecision(6)
-  expect(v).toBe('5.61200e+1')
+  expect(v).toBe('56.1200')
 })
 
 test('"111" toPrecision 2', () => {
@@ -112,7 +112,7 @@ test('"120" toPrecision 2', () => {
 test('"12300" toPrecision ', () => {
   let a = new Decimal('12300')
   let v = a.toPrecision(8)
-  expect(v).toBe('1.2300000e+4')
+  expect(v).toBe('12300.000')
 })
 
 test('"-1.15" toPrecision 4', () => {
@@ -149,18 +149,72 @@ test('toPrecision error params', () => {
 // readme eg
 test('111.22 toPrecision 1', () => {
   let a = new Decimal('111.22')
-  let v = a.toPrecision()
-  expect(v).toBe('111.22')
-})
-
-test('111.22 toPrecision 4', () => {
-  let a = new Decimal('111.22')
-  let v = a.toPrecision(4)
-  expect(v).toBe('1.112e+2')
+  let v = a.toPrecision(1)
+  expect(v).toBe('1e+2')
 })
 
 test('111.22 toPrecision 2', () => {
   let a = new Decimal('111.22')
   let v = a.toPrecision(2)
   expect(v).toBe('1.1e+2')
+})
+
+test('111.22 toPrecision 3', () => {
+  let a = new Decimal('111.22')
+  let v = a.toPrecision(3)
+  expect(v).toBe('111')
+})
+
+test('111.22 toPrecision 4', () => {
+  let a = new Decimal('111.22')
+  let v = a.toPrecision(4)
+  expect(v).toBe('111.2')
+})
+
+test('111.22 toPrecision 5', () => {
+  let a = new Decimal('111.22')
+  let v = a.toPrecision(5)
+  expect(v).toBe('111.22')
+})
+
+test('111.22 toPrecision 6', () => {
+  let a = new Decimal('111.22')
+  let v = a.toPrecision(6)
+  expect(v).toBe('111.220')
+})
+
+test('-111.22 toPrecision 1', () => {
+  let a = new Decimal('-111.22')
+  let v = a.toPrecision(1)
+  expect(v).toBe('-1e+2')
+})
+
+test('-111.22 toPrecision 2', () => {
+  let a = new Decimal('-111.22')
+  let v = a.toPrecision(2)
+  expect(v).toBe('-1.1e+2')
+})
+
+test('-111.22 toPrecision 3', () => {
+  let a = new Decimal('-111.22')
+  let v = a.toPrecision(3)
+  expect(v).toBe('-111')
+})
+
+test('-111.22 toPrecision 4', () => {
+  let a = new Decimal('-111.22')
+  let v = a.toPrecision(4)
+  expect(v).toBe('-111.2')
+})
+
+test('-111.22 toPrecision 5', () => {
+  let a = new Decimal('-111.22')
+  let v = a.toPrecision(5)
+  expect(v).toBe('-111.22')
+})
+
+test('-111.22 toPrecision 6', () => {
+  let a = new Decimal('-111.22')
+  let v = a.toPrecision(6)
+  expect(v).toBe('-111.220')
 })
