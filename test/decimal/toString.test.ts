@@ -102,5 +102,10 @@ test('1540n', () => {
 
 // number input
 test('4.56', () => {
-  expect(new Decimal(4.56).toString()).toBe('4.56')
+  expect(new Decimal('4.56').toString()).toBe('4.56')
+})
+
+// readme eg
+test('0.55', () => {
+  expect(new Decimal('0.55').toString()).toBe('0.55')
 })

@@ -52,3 +52,15 @@ test('toFixed error params', () => {
     a.toFixed(-1)
   }).toThrowError()
 })
+
+// readme eg
+
+test('100.456 toFixed 2', () => {
+  let a = new Decimal('100.456')
+  expect(a.toFixed(2)).toBe('100.46')
+})
+
+test('0 toFixed 2', () => {
+  let a = new Decimal('0')
+  expect(a.toFixed(2)).toBe('0.00')
+})

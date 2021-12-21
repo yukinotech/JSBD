@@ -145,3 +145,22 @@ test('toPrecision error params', () => {
     a.toPrecision(-1)
   }).toThrowError()
 })
+
+// readme eg
+test('111.22 toPrecision 1', () => {
+  let a = new Decimal('111.22')
+  let v = a.toPrecision()
+  expect(v).toBe('111.22')
+})
+
+test('111.22 toPrecision 4', () => {
+  let a = new Decimal('111.22')
+  let v = a.toPrecision(4)
+  expect(v).toBe('1.112e+2')
+})
+
+test('111.22 toPrecision 2', () => {
+  let a = new Decimal('111.22')
+  let v = a.toPrecision(2)
+  expect(v).toBe('1.1e+2')
+})

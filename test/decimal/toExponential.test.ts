@@ -127,3 +127,10 @@ test('toExponential error params', () => {
     a.toExponential(-1)
   }).toThrowError()
 })
+
+// readme eg
+test('1010 toExponential ', () => {
+  let a = new Decimal('1010')
+  let v = a.toExponential(2)
+  expect(v).toBe('1.01e+3')
+})
