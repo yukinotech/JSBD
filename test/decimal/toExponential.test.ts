@@ -15,6 +15,13 @@ test('"0" toExponential 0', () => {
   expect(v).toBe((0).toExponential(2))
 })
 
+test('-0.001" toExponential 2', () => {
+  let a = new Decimal('-0.001')
+  let v = a.toExponential(2)
+  expect(v).toBe('-1.00e-3')
+  expect(v).toBe((-0.001).toExponential(2))
+})
+
 test('"6" toExponential 0', () => {
   let a = new Decimal('6')
   let v = a.toExponential(0)
@@ -119,4 +126,11 @@ test('toExponential error params', () => {
   expect(() => {
     a.toExponential(-1)
   }).toThrowError()
+})
+
+// readme eg
+test('1010 toExponential ', () => {
+  let a = new Decimal('1010')
+  let v = a.toExponential(2)
+  expect(v).toBe('1.01e+3')
 })

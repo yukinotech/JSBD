@@ -197,6 +197,97 @@ export class Decimal {
       throw new Error('param fractionDigits must be a integer >=0 ')
     }
   }
+  toPrecision(precision?: number) {
+    if (precision === undefined) {
+      return this.toString()
+    } else if (isInteger(precision) && precision > 0) {
+      if (this.mantissa === 0n) {
+        // handle zero
+        if (precision === 1) return '0'
+        let rtnStr = ''
+        while (precision > 1) {
+          rtnStr += '0'
+          precision--
+        }
+        return '0.' + rtnStr
+      }
+      const mantissaStr = this.mantissa.toString()
+      let mantissa = this.mantissa
+      let exponent = this.exponent
+      let newMantissaStr = mantissaStr
+      let offset = 0
+      if (mantissa < 0) {
+        offset = 1
+      }
+      if (precision < mantissaStr.length - offset) {
+        // need round
+        const v = JSBD.round(snDecimal(this.mantissa, this.exponent), {
+          roundingMode: 'half up',
+          maximumFractionDigits:
+            precision - (mantissaStr.length - offset) - this.exponent,
+        })
+        mantissa = v.mantissa
+        exponent = v.exponent
+        newMantissaStr = mantissa.toString()
+      }
+      // to format
+      let minus, precisionStr
+
+      if (precision > newMantissaStr.length - offset) {
+        // at least x * 10^n , precision >=2
+        minus = precision - (newMantissaStr.length - offset)
+        exponent = exponent - minus
+        precisionStr = newMantissaStr
+        while (minus > 0) {
+          precisionStr += '0'
+          minus--
+        }
+      } else {
+        precisionStr = newMantissaStr.slice(0, precision + offset)
+        minus = newMantissaStr.length - offset - precision
+        exponent = exponent + minus
+      }
+      // precisionStr is precision value
+      // now , result = precisionStr * 10^exponent
+      if (exponent > 0) {
+        // need to format with e
+        if (precisionStr.length - offset === 1) {
+          return precisionStr + 'e+' + exponent.toString()
+        }
+        return (
+          precisionStr.slice(0, offset + 1) +
+          '.' +
+          precisionStr.slice(offset + 1) +
+          'e+' +
+          (exponent + precision - 1).toString()
+        )
+      } else if (exponent === 0) {
+        return precisionStr
+      } else {
+        // need to format with point
+        let absExponent = -1 * exponent
+        if (precisionStr.length - offset > absExponent) {
+          // minusFlag >= 0
+          let insert = precisionStr.length - absExponent
+          return (
+            precisionStr.slice(0, insert) + '.' + precisionStr.slice(insert)
+          )
+        } else {
+          let zero = ''
+          let zeroNumber = absExponent - (precisionStr.length - offset)
+          while (zeroNumber > 0) {
+            zero += '0'
+            zeroNumber--
+          }
+          return offset === 0
+            ? '0.' + zero + precisionStr
+            : '-0.' + zero + precisionStr.slice(1)
+        }
+      }
+    } else {
+      throw new Error('precision should be an integer >= 1')
+    }
+  }
 }
 
 // build a decimal form scientific notation

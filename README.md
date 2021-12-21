@@ -245,8 +245,7 @@ This function returns a string that represents the `BigDecimal` in the specified
 same semantics of `Number.prototype.toPrecision`.
 
 ```js
-// to do
-let v = JSBD.BigDecimal('1.22')
+let v = JSBD.BigDecimal('111.22')
 console.log(v.toPrecision()) // prints 111.22
 console.log(v.toPrecision(4)) // 111.2
 console.log(v.toPrecision(2)) //1.1e+2
