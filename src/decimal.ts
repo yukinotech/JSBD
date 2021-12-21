@@ -197,6 +197,92 @@ export class Decimal {
       throw new Error('param fractionDigits must be a integer >=0 ')
     }
   }
+  toPrecision(precision?: number) {
+    if (precision === undefined) {
+      return this.toString()
+    } else if (isInteger(precision) && precision > 0) {
+      if (this.mantissa === 0n) {
+        if (precision === 0) return '0'
+        let rtnStr = ''
+        while (precision > 0) {
+          rtnStr += '0'
+          precision--
+        }
+        return '0.' + rtnStr
+      }
+      const exponentStr = this.exponent.toString()
+      let mantissa = this.mantissa
+      let exponent = this.exponent
+      let newExponentStr = exponentStr
+      let offset = 0
+      if (mantissa < 0) {
+        offset = 1
+      }
+      if (precision < exponentStr.length - offset) {
+        // need round
+        const v = JSBD.round(snDecimal(this.mantissa, this.exponent), {
+          roundingMode: 'half up',
+          maximumFractionDigits: precision - (exponentStr.length - offset),
+        })
+        mantissa = v.mantissa
+        exponent = v.exponent
+        newExponentStr = mantissa.toString()
+      }
+      // to format
+      let minus, precisionStr
+      if (precision > newExponentStr.length - offset) {
+        // at least x * 10^n , precision >=2
+        minus = precision - (newExponentStr.length - offset)
+        exponent = exponent - minus
+        precisionStr = newExponentStr
+        while (minus > 0) {
+          precisionStr += '0'
+          minus--
+        }
+      } else {
+        precisionStr = newExponentStr.slice(0, precision + offset)
+        minus = newExponentStr.length - offset - precision
+        exponent = exponent - minus
+      }
+
+      // precisionStr is precision value
+      if (exponent > 0) {
+        // need to format with e
+        // at least x0 * 10^n
+        return (
+          precisionStr.slice(0, offset + 1) +
+          '.' +
+          precisionStr.slice(offset + 1) +
+          'e+' +
+          (exponent + precision - 1).toString()
+        )
+      } else if (exponent === 0) {
+        return precisionStr
+      } else {
+        // need to format with point
+        let absExponent = -1 * exponent
+        if (precisionStr.length - offset > absExponent) {
+          return (
+            precisionStr.slice(0, offset + 1) +
+            '.' +
+            precisionStr.slice(offset + 1)
+          )
+        } else {
+          let zero = ''
+          let zeroNumber = absExponent - (precisionStr.length - offset)
+          while (zeroNumber > 0) {
+            zero += '0'
+            zeroNumber--
+          }
+          return offset === 0
+            ? '0.' + zero + precisionStr
+            : '-0.' + zero + precisionStr.slice(1)
+        }
+      }
+    } else {
+      throw new Error('precision should be an integer >= 1')
+    }
+  }
 }
 
 // build a decimal form scientific notation
