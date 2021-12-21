@@ -202,53 +202,58 @@ export class Decimal {
       return this.toString()
     } else if (isInteger(precision) && precision > 0) {
       if (this.mantissa === 0n) {
-        if (precision === 0) return '0'
+        // handle zero
+        if (precision === 1) return '0'
         let rtnStr = ''
-        while (precision > 0) {
+        while (precision > 1) {
           rtnStr += '0'
           precision--
         }
         return '0.' + rtnStr
       }
-      const exponentStr = this.exponent.toString()
+      const mantissaStr = this.mantissa.toString()
       let mantissa = this.mantissa
       let exponent = this.exponent
-      let newExponentStr = exponentStr
+      let newMantissaStr = mantissaStr
       let offset = 0
       if (mantissa < 0) {
         offset = 1
       }
-      if (precision < exponentStr.length - offset) {
+      if (precision < mantissaStr.length - offset) {
         // need round
         const v = JSBD.round(snDecimal(this.mantissa, this.exponent), {
           roundingMode: 'half up',
-          maximumFractionDigits: precision - (exponentStr.length - offset),
+          maximumFractionDigits:
+            precision - (mantissaStr.length - offset) - this.exponent,
         })
         mantissa = v.mantissa
         exponent = v.exponent
-        newExponentStr = mantissa.toString()
+        newMantissaStr = mantissa.toString()
       }
       // to format
       let minus, precisionStr
-      if (precision > newExponentStr.length - offset) {
+
+      if (precision > newMantissaStr.length - offset) {
         // at least x * 10^n , precision >=2
-        minus = precision - (newExponentStr.length - offset)
+        minus = precision - (newMantissaStr.length - offset)
         exponent = exponent - minus
-        precisionStr = newExponentStr
+        precisionStr = newMantissaStr
         while (minus > 0) {
           precisionStr += '0'
           minus--
         }
       } else {
-        precisionStr = newExponentStr.slice(0, precision + offset)
-        minus = newExponentStr.length - offset - precision
-        exponent = exponent - minus
+        precisionStr = newMantissaStr.slice(0, precision + offset)
+        minus = newMantissaStr.length - offset - precision
+        exponent = exponent + minus
       }
-
       // precisionStr is precision value
+      // now , result = precisionStr * 10^exponent
       if (exponent > 0) {
         // need to format with e
-        // at least x0 * 10^n
+        if (precisionStr.length - offset === 1) {
+          return precisionStr + 'e+' + exponent.toString()
+        }
         return (
           precisionStr.slice(0, offset + 1) +
           '.' +
@@ -262,10 +267,13 @@ export class Decimal {
         // need to format with point
         let absExponent = -1 * exponent
         if (precisionStr.length - offset > absExponent) {
+          // minusFlag >= 0
+          let minusFlag = precisionStr.length - offset - absExponent - 1
           return (
             precisionStr.slice(0, offset + 1) +
             '.' +
-            precisionStr.slice(offset + 1)
+            precisionStr.slice(offset + 1) +
+            `${minusFlag === 0 ? '' : 'e+' + minusFlag.toString()}`
           )
         } else {
           let zero = ''
