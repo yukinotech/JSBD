@@ -89,6 +89,7 @@ operation.
 ```javascript
 let a = JSBD.BigDecimal('1.25')
 let b = JSBD.BigDecimal('644e-2')
+// 1.25 + 6.44 = 7.69
 JSBD.add(a, b).toString()
 // '7.69'
 ```
@@ -109,6 +110,7 @@ operation.
 ```javascript
 let a = JSBD.BigDecimal('1.25')
 let b = JSBD.BigDecimal('644e-2')
+// 1.25 - 6.44 = -5.19
 JSBD.subtract(a, b).toString()
 // '-5.19'
 ```
@@ -128,6 +130,7 @@ on `options` object, if given. `options` is an options bag that configures the r
 ```javascript
 let a = JSBD.BigDecimal('12')
 let b = JSBD.BigDecimal('1.2')
+// 12 * 1.2 = 14.4
 JSBD.multiply(a, b).toString()
 // '14.4'
 ```
@@ -154,6 +157,7 @@ then possible to return a correct result for any given input.
 let a = JSBD.BigDecimal('0.2')
 let b = JSBD.BigDecimal('3')
 
+// 0.2 / 3 = 0.0067
 JSBD.divide(a, b, {
   maximumFractionDigits: 4,
   roundingMode: 'half even',
@@ -178,8 +182,7 @@ let a = JSBD.BigDecimal('2')
 let b = JSBD.BigDecimal('0.3')
 
 // 2 % 0.3 => 0.2
-JSBD.remainder(a, b).toString()
-// '0.2'
+JSBD.remainder(a, b).toString() // '0.2'
 ```
 
 ### JSBD.pow(number, power [, options])
@@ -198,8 +201,86 @@ positive integer.
 ```javascript
 let a = JSBD.BigDecimal('0.2')
 let b = 3
+// '0.2^3 === 0.008'
 JSBD.pow(a, b).toString()
-// '0.008'
+```
+
+### JSBD.equal(lhs, rhs)
+
+It returns `true` if `lhs` has the same value of `rhs`. Otherwise, returns `false`.
+
+`lhs` and `rhs` should be BigDecimal instance
+
+```javascript
+let a = JSBD.BigDecimal('0.2')
+let b = JSBD.BigDecimal('2e-1')
+// 'a === b
+JSBD.equal(a, b) // 'true'
+```
+
+### JSBD.notEqual(lhs, rhs)
+
+It returns `false` if `lhs` has the same value and type of `rhs`. Otherwise, returns `true`.
+
+`lhs` and `rhs` should be BigDecimal instance
+
+```javascript
+let a = JSBD.BigDecimal('0.2')
+let b = JSBD.BigDecimal('0.5')
+// 'a !== b'
+JSBD.notEqual(a, b) // 'true'
+```
+
+### JSBD.lessThan(lhs, rhs)
+
+It returns `true` if the value of `lhs` is lesser than the value of `rhs`. Otherwise it returns `false`.
+
+`lhs` and `rhs` should be BigDecimal instance
+
+```javascript
+let a = JSBD.BigDecimal('0.2')
+let b = JSBD.BigDecimal('0.5')
+// a < b
+JSBD.lessThan(a, b) // 'true'
+```
+
+### JSBD.greaterThan(lhs, rhs)
+
+It returns `true` if the value of `lhs` is greater than the value of `rhs`. Otherwise it returns `false`.
+
+`lhs` and `rhs` should be BigDecimal instance
+
+```javascript
+let a = JSBD.BigDecimal('0.9')
+let b = JSBD.BigDecimal('0.5')
+// a > b
+JSBD.greaterThan(a, b) // 'true'
+```
+
+### JSBD.lessThanOrEqual(lhs, rhs)
+
+It returns `true` if the value of `lhs` is lesser or equal than the value of `rhs`. Otherwise, it returns `false`.
+
+`lhs` and `rhs` should be BigDecimal instance
+
+```javascript
+let a = JSBD.BigDecimal('0.1')
+let b = JSBD.BigDecimal('0.4')
+// a <= b
+JSBD.lessThanOrEqual(a, b) // 'true'
+```
+
+### JSBD.greaterThanOrEqual(lhs, rhs)
+
+It returns `true` if the value of `lhs` is greater or equal than the value of `rhs`. Otherwise, it returns `false`.
+
+`lhs` and `rhs` should be BigDecimal instance
+
+```javascript
+let a = JSBD.BigDecimal('0.5')
+let b = JSBD.BigDecimal('0.4')
+// a >= b
+JSBD.greaterThanOrEqual(a, b) // 'true'
 ```
 
 ## BigDecimal prototype
