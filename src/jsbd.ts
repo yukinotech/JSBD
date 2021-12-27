@@ -3,6 +3,10 @@ import { Decimal, snDecimal } from './decimal'
 import { isInteger, getAbs } from './utils'
 
 export class JSBD {
+  /**
+   * Init a BigDecimal object
+   * @param intVal default value to init a BigDecimal object
+   */
   static BigDecimal(intVal: DecimalIntVal) {
     return new Decimal(intVal)
   }
