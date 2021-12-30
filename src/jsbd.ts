@@ -90,12 +90,15 @@ export class JSBD {
         'divide result maximumFractionDigits must be an integer'
       )
     }
+
     if (b.mantissa === 0n) {
       throw new Error(`0 can't be divided`)
     }
     if (a.mantissa === 0n) {
       return JSBD.BigDecimal('0')
     }
+    // to get greatest common factor (获取最大公约数)
+    // use
     let res = a.mantissa / b.mantissa
     let minus = a.exponent - b.exponent
     let dig = -maximumFractionDigits
