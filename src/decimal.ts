@@ -10,9 +10,14 @@ export class Decimal {
         return new Decimal(intVal.toString(10))
       }
       case 'number': {
+        if (isNaN(intVal) || intVal === Infinity || intVal === -Infinity) {
+          throw new Error(`intVal can't be Infinity or NaN`)
+        }
         return new Decimal(intVal.toString(10))
       }
       case 'string': {
+        // to make easy to use
+        intVal = intVal.trim()
         if (isLiteral(intVal)) {
           // style like 1234.56
           let { mantissa, exponent } = parseLiteral(intVal)
