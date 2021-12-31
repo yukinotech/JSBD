@@ -1,0 +1,38 @@
+import { isOnly25Or1 } from '../../src/utils'
+
+let t = (a: bigint, expected: boolean) => {
+  test(a.toString() + ' isOnly25Or1 ', () => {
+    let res = isOnly25Or1(a)
+    expect(res).toBe(expected)
+  })
+}
+
+t(100n, true)
+t(21n, false)
+t(20n, true)
+t(19n, false)
+t(18n, false)
+t(17n, false)
+t(16n, true)
+t(15n, false)
+t(14n, false)
+t(13n, false)
+t(12n, false)
+t(11n, false)
+t(10n, true)
+t(9n, false)
+t(8n, true)
+t(7n, false)
+t(6n, false)
+t(5n, true)
+t(4n, true)
+t(3n, false)
+t(2n, true)
+t(1n, true)
+t(1000n, true)
+t(125n, true)
+t(625n, true)
+t(250n, true)
+t(512n, true)
+t(1024n, true)
+t(100000n, true)

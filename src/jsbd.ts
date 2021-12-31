@@ -1,6 +1,6 @@
 import { DecimalIntVal, RoundOption } from './type'
 import { Decimal, snDecimal } from './decimal'
-import { isInteger, getAbs } from './utils'
+import { isInteger, getAbs, getGcd, isOnly25Or1 } from './utils'
 
 export class JSBD {
   /**
@@ -82,38 +82,81 @@ export class JSBD {
     }
   }
   // divide => a / b
-  static divide(a: Decimal, b: Decimal, option: RoundOption): Decimal {
-    // @ts-ignore
-    const maximumFractionDigits = option?.maximumFractionDigits as number
-    if (!isInteger(maximumFractionDigits)) {
-      throw new TypeError(
-        'divide result maximumFractionDigits must be an integer'
-      )
-    }
-
+  static divide(a: Decimal, b: Decimal, option?: RoundOption): Decimal {
     if (b.mantissa === 0n) {
       throw new Error(`0 can't be divided`)
     }
     if (a.mantissa === 0n) {
       return JSBD.BigDecimal('0')
     }
-    // to get greatest common factor (获取最大公约数)
-    // use
+
+    // to abs
+    const aPositive = getAbs(a.mantissa)
+    const bPositive = getAbs(b.mantissa)
+    // get greatest common factor
+    // use Euclidean algorithm , if a>=b, getGcd(a,b) = getGcd(b,a mod b)
+    // result is not repeating decimal
+    const gcf = getGcd(aPositive, bPositive)
+    let bCoprime = bPositive / gcf
+
+    // common params
     let res = a.mantissa / b.mantissa
     let minus = a.exponent - b.exponent
+    let maximumFractionDigits = option?.maximumFractionDigits
+    let roundingMode = option?.roundingMode
+
+    if (isOnly25Or1(bCoprime)) {
+      // if result is limit decimal
+      if (maximumFractionDigits === undefined) {
+        // which means should get exact value of divide
+        let left = aPositive % bPositive
+        while (true) {
+          // new value in the position of result
+          let left10 = left * 10n
+          let newValue = left10 / bPositive
+          left = left10 % bPositive
+          res = res > 0 ? res * 10n + newValue : res * 10n - newValue
+          minus--
+          if (left === 0n) {
+            break
+          }
+        }
+        return snDecimal(res, minus)
+      } else if (maximumFractionDigits !== undefined) {
+        if (!isInteger(maximumFractionDigits)) {
+          throw new TypeError(
+            maximumFractionDigits.toString() + 'is not a legal integer'
+          )
+        }
+      }
+    } else {
+    }
+
+    // if result is repeating decimal , maximumFractionDigits should be specified,
+    // or round the number with 34 fractional digits using halfUp round mode
+
+    if (maximumFractionDigits === undefined) {
+      maximumFractionDigits = 34
+    }
+    if (roundingMode === undefined) {
+      roundingMode = 'half up'
+    }
     let dig = -maximumFractionDigits
     if (minus < dig) {
       let sn = snDecimal(res, minus)
-      return JSBD.round(sn, option)
+      return JSBD.round(sn, {
+        maximumFractionDigits,
+        roundingMode,
+      })
     } else {
       let toDivideTimes = minus - dig + 1
-      // all to be positive
-      let aPositive = a.mantissa > 0 ? a.mantissa : a.mantissa * -1n
-      let bPositive = b.mantissa > 0 ? b.mantissa : b.mantissa * -1n
       let left = aPositive % bPositive
       if (left === 0n) {
         let sn = snDecimal(res, minus)
-        return JSBD.round(sn, option)
+        return JSBD.round(sn, {
+          maximumFractionDigits,
+          roundingMode,
+        })
       }
       if (
         (a.mantissa > 0 && b.mantissa > 0) ||
@@ -132,7 +175,10 @@ export class JSBD {
           }
         }
         let sn = snDecimal(res, minus)
-        return JSBD.round(sn, option)
+        return JSBD.round(sn, {
+          maximumFractionDigits,
+          roundingMode,
+        })
       } else {
         while (toDivideTimes > 0) {
           // new value in the position of result
@@ -147,7 +193,10 @@ export class JSBD {
           }
         }
         let sn = snDecimal(res, minus)
-        return JSBD.round(sn, option)
+        return JSBD.round(sn, {
+          maximumFractionDigits,
+          roundingMode,
+        })
       }
     }
   }
