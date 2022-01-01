@@ -106,41 +106,50 @@ export class JSBD {
     let roundingMode = option?.roundingMode
 
     if (isOnly25Or1(bCoprime)) {
-      // if result is limit decimal
+      // result is limit decimal
       if (maximumFractionDigits === undefined) {
         // which means should get exact value of divide
         let left = aPositive % bPositive
+        if (left === 0n) return snDecimal(res, minus)
+        const sign =
+          (a.mantissa > 0 && b.mantissa > 0) ||
+          (a.mantissa < 0 && b.mantissa < 0)
+            ? 1
+            : -1
         while (true) {
           // new value in the position of result
           let left10 = left * 10n
           let newValue = left10 / bPositive
           left = left10 % bPositive
-          res = res > 0 ? res * 10n + newValue : res * 10n - newValue
+          res = sign > 0 ? res * 10n + newValue : res * 10n - newValue
           minus--
           if (left === 0n) {
             break
           }
         }
         return snDecimal(res, minus)
-      } else if (maximumFractionDigits !== undefined) {
+      } else {
         if (!isInteger(maximumFractionDigits)) {
           throw new TypeError(
+            // @ts-ignore
             maximumFractionDigits.toString() + 'is not a legal integer'
           )
         }
+        if (roundingMode === undefined) {
+          roundingMode = 'half up'
+        }
       }
     } else {
+      // the result is repeating decimal , maximumFractionDigits should be specified,
+      // or round the number with 34 fractional digits using halfUp round mode
+      if (maximumFractionDigits === undefined) {
+        maximumFractionDigits = 34
+      }
+      if (roundingMode === undefined) {
+        roundingMode = 'half up'
+      }
     }
 
-    // if result is repeating decimal , maximumFractionDigits should be specified,
-    // or round the number with 34 fractional digits using halfUp round mode
-
-    if (maximumFractionDigits === undefined) {
-      maximumFractionDigits = 34
-    }
-    if (roundingMode === undefined) {
-      roundingMode = 'half up'
-    }
     let dig = -maximumFractionDigits
     if (minus < dig) {
       let sn = snDecimal(res, minus)
