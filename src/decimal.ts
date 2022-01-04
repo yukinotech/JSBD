@@ -29,7 +29,7 @@ export class Decimal {
           this.mantissa = mantissa
           this.exponent = exponent
         } else {
-          throw new Error('string value must be legal number')
+          throw new Error(`string value "${intVal}"must be legal number`)
         }
         break
       }
@@ -112,22 +112,26 @@ export class Decimal {
       (isInteger(fractionDigits) && fractionDigits >= 0) ||
       fractionDigits === undefined
     ) {
-      if (fractionDigits === undefined) {
-        fractionDigits = 0
-      }
       if (this.mantissa === 0n) {
-        if (fractionDigits === 0) return '0e+0'
+        if (fractionDigits === 0 || fractionDigits === undefined) return '0e+0'
         let rtn = '0.'
         for (let i = 0; i < fractionDigits; i++) {
           rtn += '0'
         }
         return rtn + 'e+0'
       }
+
       let str = this.mantissa.toString(10)
       let offset = 0
       if (this.mantissa < 0) {
         offset = 1
       }
+
+      if (fractionDigits === undefined) {
+        // to get precision
+        fractionDigits = str.slice(offset).replace(/0*$/, '').length - 1
+      }
+
       let mantissa, exponent
       if (fractionDigits < str.length - offset - 1) {
         // to half up
