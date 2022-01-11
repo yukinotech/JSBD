@@ -14,3 +14,23 @@ test('useless string', () => {
     new Decimal('054.54')
   }).toThrowError()
 })
+
+// Infinity, -Infinity, NaN case
+test('Infinity', () => {
+  expect(() => {
+    // @ts-ignore
+    let a = new Decimal(Infinity)
+  }).toThrowError()
+})
+test('-Infinity', () => {
+  expect(() => {
+    // @ts-ignore
+    let a = new Decimal(-Infinity)
+  }).toThrowError()
+})
+test('NaN', () => {
+  expect(() => {
+    // @ts-ignore
+    let a = new Decimal(NaN)
+  }).toThrowError()
+})
