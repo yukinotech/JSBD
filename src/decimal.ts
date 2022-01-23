@@ -376,8 +376,6 @@ export class Decimal {
     }
 
     let sn = snDecimal(this.mantissa, this.exponent)
-    sn.mantissa = this.mantissa
-    sn.exponent = this.exponent
     power--
     while (power > 0) {
       sn = JSBD.multiply(sn, this)
