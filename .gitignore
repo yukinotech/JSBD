@@ -11,5 +11,11 @@ coverage
 # java-test
 java-test
 
+# ts-test
+ts-test
+
 # build
 build
+
+# java
+*.class

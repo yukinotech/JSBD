@@ -1,6 +1,6 @@
 {
   "name": "jsbd",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "dist/index.js",
   "module": "dist/index.modern.mjs",
   "unpkg": "dist/index.umd.js",
@@ -18,7 +18,7 @@
   "scripts": {
     "i": "yarn install --registry=https://registry.npmmirror.com/",
     "tsc": "tsc --project tsconfig.json",
-    "test:pre": "tsc --project tsconfig.json && cross-env NODE_OPTIONS=--experimental-vm-modules npx jest ./test",
+    "test:pre": "tsc --project tsconfig.json && jest ./ts-test",
     "test": "tsc --project tsconfig.json && jest --coverage",
     "build": "rimraf dist && yarn tsc && rollup --config rollup.config.js"
   },

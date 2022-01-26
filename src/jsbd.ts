@@ -172,7 +172,7 @@ export class JSBD {
         (a.mantissa > 0 && b.mantissa > 0) ||
         (a.mantissa < 0 && b.mantissa < 0)
       ) {
-        while (toDivideTimes > 0) {
+        while (true) {
           // new value in the position of result
           let left10 = left * 10n
           let newValue = left10 / bPositive
@@ -183,6 +183,15 @@ export class JSBD {
           if (left === 0n) {
             break
           }
+          if (toDivideTimes === 0) {
+            if (newValue !== 5n) {
+              break
+            }
+          } else if (toDivideTimes < 0) {
+            if (newValue !== 0n) {
+              break
+            }
+          }
         }
         let sn = snDecimal(res, minus)
         return JSBD.round(sn, {
@@ -190,7 +199,7 @@ export class JSBD {
           roundingMode,
         })
       } else {
-        while (toDivideTimes > 0) {
+        while (true) {
           // new value in the position of result
           let left10 = left * 10n
           let newValue = left10 / bPositive
@@ -200,6 +209,15 @@ export class JSBD {
           toDivideTimes--
           if (left === 0n) {
             break
+          }
+          if (toDivideTimes === 0) {
+            if (newValue !== 5n) {
+              break
+            }
+          } else if (toDivideTimes < 0) {
+            if (newValue !== 0n) {
+              break
+            }
           }
         }
         let sn = snDecimal(res, minus)
@@ -315,7 +333,7 @@ export class JSBD {
       if (a.exponent >= dig) {
         return snDecimal(a.mantissa, a.exponent)
       } else {
-        // 缩放 maximumFractionDigits
+        // scale maximumFractionDigits
         let minus = dig - a.exponent
         let div = 10n ** BigInt(minus)
         let left = a.mantissa % div
@@ -345,11 +363,9 @@ export class JSBD {
         let div = 10n ** BigInt(minus)
         let subDiv = 10n ** BigInt(minus - 1)
         let left = a.mantissa % div
-        let subLeft = a.mantissa % subDiv
-        let dependValue = (left - subLeft) / subDiv
         let withZero = a.mantissa - left
         if (roundingMode === 'half up') {
-          if (getAbs(dependValue) > 4) {
+          if (getAbs(left) >= 5n * subDiv) {
             if (a.mantissa > 0) {
               return snDecimal(withZero + div, a.exponent)
             } else {
@@ -359,7 +375,7 @@ export class JSBD {
             return snDecimal(withZero, a.exponent)
           }
         } else if (roundingMode === 'half down') {
-          if (getAbs(dependValue) > 5) {
+          if (getAbs(left) > 5n * subDiv) {
             if (a.mantissa > 0) {
               return snDecimal(withZero + div, a.exponent)
             } else {
@@ -370,16 +386,16 @@ export class JSBD {
           }
         } else {
           // roundingMode === 'half even'
-          if (getAbs(dependValue) > 5) {
+          if (getAbs(left) > 5n * subDiv) {
             if (a.mantissa > 0) {
               return snDecimal(withZero + div, a.exponent)
             } else {
               return snDecimal(withZero - div, a.exponent)
             }
-          } else if (getAbs(dependValue) < 5) {
+          } else if (getAbs(left) < 5n * subDiv) {
             return snDecimal(withZero, a.exponent)
           } else {
-            // dependValue === 5
+            // getAbs(left) === 5n * subDiv
             let superDiv = 10n ** BigInt(minus + 1)
             let superLeft = a.mantissa % superDiv
             // evenDependValue can be negative or positive
