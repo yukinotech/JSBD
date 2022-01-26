@@ -315,7 +315,7 @@ export class JSBD {
       if (a.exponent >= dig) {
         return snDecimal(a.mantissa, a.exponent)
       } else {
-        // 缩放 maximumFractionDigits
+        // scale maximumFractionDigits
         let minus = dig - a.exponent
         let div = 10n ** BigInt(minus)
         let left = a.mantissa % div

@@ -158,6 +158,16 @@ test('"-101.005" round half down "-3"', () => {
   ).toBe('0')
 })
 
+test('"111967.045454545" round half down "2"', () => {
+  let a = JSBD.BigDecimal('111967.045454545')
+  expect(
+    JSBD.round(a, {
+      roundingMode: 'half down',
+      maximumFractionDigits: 2,
+    }).toString()
+  ).toBe('111967.05')
+})
+
 // without maximumFractionDigits or without option
 test('"-901.34" round half down with no option', () => {
   let a = JSBD.BigDecimal('-901.34')
