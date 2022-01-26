@@ -23,6 +23,12 @@ test('"1.2" pow 3', () => {
   ).toBe('1.7')
 })
 
+test('2 pow 300', () => {
+  let a = JSBD.BigDecimal('2')
+  let b = 300
+  expect(JSBD.pow(a, b).toString()).toBe('2037035976334486086268445688409378161051468393665936250636140449354381299763336706183397376')
+})
+
 test('"0.2" pow 3', () => {
   let a = JSBD.BigDecimal('0.2')
   let b = '54'
