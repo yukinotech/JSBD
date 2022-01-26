@@ -172,7 +172,7 @@ export class JSBD {
         (a.mantissa > 0 && b.mantissa > 0) ||
         (a.mantissa < 0 && b.mantissa < 0)
       ) {
-        while (toDivideTimes > 0) {
+        while (true) {
           // new value in the position of result
           let left10 = left * 10n
           let newValue = left10 / bPositive
@@ -183,6 +183,15 @@ export class JSBD {
           if (left === 0n) {
             break
           }
+          if (toDivideTimes === 0) {
+            if (newValue !== 5n) {
+              break
+            }
+          } else if (toDivideTimes < 0) {
+            if (newValue !== 0n) {
+              break
+            }
+          }
         }
         let sn = snDecimal(res, minus)
         return JSBD.round(sn, {
@@ -190,7 +199,7 @@ export class JSBD {
           roundingMode,
         })
       } else {
-        while (toDivideTimes > 0) {
+        while (true) {
           // new value in the position of result
           let left10 = left * 10n
           let newValue = left10 / bPositive
@@ -200,6 +209,15 @@ export class JSBD {
           toDivideTimes--
           if (left === 0n) {
             break
+          }
+          if (toDivideTimes === 0) {
+            if (newValue !== 5n) {
+              break
+            }
+          } else if (toDivideTimes < 0) {
+            if (newValue !== 0n) {
+              break
+            }
           }
         }
         let sn = snDecimal(res, minus)
