@@ -890,4 +890,7 @@ t('1', '203703597633448608626844568840937816105146839366593625063614044935438129
   t('426216.0729973379638977348804473876953125', '-797597', '-0.53', { maximumFractionDigits: 2, roundingMode: 'half down' })
   t('0.4978004733383933899659723465447314083576202392578125', '-82334.21353390745935030281543731689453125', '0', { maximumFractionDigits: 2, roundingMode: 'half down' })
   t('1058', '2992505.80319340713322162628173828125', '0', { maximumFractionDigits: 2, roundingMode: 'half down' })
+  t('1.27650023', '2.3', '0.56', { maximumFractionDigits: 2, roundingMode: 'half down' })
+  t('1.2826668', '2.311111', '0.56', { maximumFractionDigits: 2, roundingMode: 'half down' })
+  t('-1.2826668', '2.311111', '-0.56', { maximumFractionDigits: 2, roundingMode: 'half down' })
 }

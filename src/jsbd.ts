@@ -395,7 +395,7 @@ export class JSBD {
           } else if (getAbs(left) < 5n * subDiv) {
             return snDecimal(withZero, a.exponent)
           } else {
-            // dependValue === 5
+            // getAbs(left) === 5n * subDiv
             let superDiv = 10n ** BigInt(minus + 1)
             let superLeft = a.mantissa % superDiv
             // evenDependValue can be negative or positive

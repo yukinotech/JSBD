@@ -16,3 +16,6 @@ ts-test
 
 # build
 build
+
+# java
+*.class
