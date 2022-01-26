@@ -12,14 +12,14 @@ test('"0.000" round half down "-1"', () => {
 })
 
 // BigDecimal > 0 && maximumFractionDigits <= 0
-test('"1155.4" round half down "0"', () => {
+test('"1155.4" round half down "-1"', () => {
   let a = JSBD.BigDecimal('1155.4')
   expect(
     JSBD.round(a, {
       roundingMode: 'half down',
       maximumFractionDigits: -1,
     }).toString()
-  ).toBe('1150')
+  ).toBe('1160')
 })
 
 test('"114.67" round half down "0"', () => {

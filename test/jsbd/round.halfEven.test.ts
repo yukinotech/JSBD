@@ -205,7 +205,7 @@ test('"-105.001" round half even "-1"', () => {
       roundingMode: 'half even',
       maximumFractionDigits: -1,
     }).toString()
-  ).toBe('-100')
+  ).toBe('-110')
 })
 
 test('"-101.005" round half even "-3"', () => {

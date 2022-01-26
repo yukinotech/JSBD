@@ -18,7 +18,7 @@
   "scripts": {
     "i": "yarn install --registry=https://registry.npmmirror.com/",
     "tsc": "tsc --project tsconfig.json",
-    "test:pre": "tsc --project tsconfig.json && cross-env NODE_OPTIONS=--experimental-vm-modules npx jest ./test",
+    "test:pre": "tsc --project tsconfig.json && cross-env NODE_OPTIONS=--experimental-vm-modules npx jest ./ts-test",
     "test": "tsc --project tsconfig.json && jest --coverage",
     "build": "rimraf dist && yarn tsc && rollup --config rollup.config.js"
   },
