@@ -90,16 +90,13 @@ export class JSBD {
       return JSBD.BigDecimal('0')
     }
 
-    // to abs
     const aPositive = getAbs(a.mantissa)
     const bPositive = getAbs(b.mantissa)
     // get greatest common factor
     // use Euclidean algorithm , if a>=b, getGcd(a,b) = getGcd(b,a mod b)
-    // result is not repeating decimal
     const gcf = getGcd(aPositive, bPositive)
     let bCoprime = bPositive / gcf
 
-    // common params
     let res = a.mantissa / b.mantissa
     let minus = a.exponent - b.exponent
     let maximumFractionDigits = option?.maximumFractionDigits
@@ -128,7 +125,7 @@ export class JSBD {
       return snDecimal(res, minus)
     }
 
-    // other case , maximumFractionDigits is needed
+    // for the other case , "maximumFractionDigits" and "roundingMode" should be provided and checked
     if (
       !isInteger(maximumFractionDigits) &&
       maximumFractionDigits !== undefined
@@ -138,6 +135,21 @@ export class JSBD {
         `params maximumFractionDigits :${String(
           maximumFractionDigits
         )} is not a legal integer`
+      )
+    }
+    if (
+      roundingMode !== 'half up' &&
+      roundingMode !== 'half down' &&
+      roundingMode !== 'half even' &&
+      roundingMode !== 'up' &&
+      roundingMode !== 'down' &&
+      roundingMode !== undefined
+    ) {
+      throw new TypeError(
+        // @ts-ignore
+        `params roundingMode :${String(
+          roundingMode
+        )} must be one of "half up","half down","half even","up","down"`
       )
     }
 
@@ -152,81 +164,40 @@ export class JSBD {
     }
 
     let dig = -maximumFractionDigits
-    if (minus < dig) {
+    let toDivideTimes = minus - dig + 1
+    let left = aPositive % bPositive
+    if (left === 0n) {
       let sn = snDecimal(res, minus)
       return JSBD.round(sn, {
         maximumFractionDigits,
         roundingMode,
       })
-    } else {
-      let toDivideTimes = minus - dig + 1
-      let left = aPositive % bPositive
+    }
+    let sign =
+      (a.mantissa > 0 && b.mantissa > 0) || (a.mantissa < 0 && b.mantissa < 0)
+        ? true
+        : false
+
+    while (true) {
+      // new value in the position of result
+      let left10 = left * 10n
+      let newValue = left10 / bPositive
+      left = left10 % bPositive
+      res = sign ? res * 10n + newValue : res * 10n - newValue
+      minus--
+      toDivideTimes--
       if (left === 0n) {
-        let sn = snDecimal(res, minus)
-        return JSBD.round(sn, {
-          maximumFractionDigits,
-          roundingMode,
-        })
+        break
       }
-      if (
-        (a.mantissa > 0 && b.mantissa > 0) ||
-        (a.mantissa < 0 && b.mantissa < 0)
-      ) {
-        while (true) {
-          // new value in the position of result
-          let left10 = left * 10n
-          let newValue = left10 / bPositive
-          left = left10 % bPositive
-          res = res * 10n + newValue
-          minus--
-          toDivideTimes--
-          if (left === 0n) {
-            break
-          }
-          if (toDivideTimes === 0) {
-            if (newValue !== 5n) {
-              break
-            }
-          } else if (toDivideTimes < 0) {
-            if (newValue !== 0n) {
-              break
-            }
-          }
-        }
-        let sn = snDecimal(res, minus)
-        return JSBD.round(sn, {
-          maximumFractionDigits,
-          roundingMode,
-        })
-      } else {
-        while (true) {
-          // new value in the position of result
-          let left10 = left * 10n
-          let newValue = left10 / bPositive
-          left = left10 % bPositive
-          res = res * 10n - newValue
-          minus--
-          toDivideTimes--
-          if (left === 0n) {
-            break
-          }
-          if (toDivideTimes === 0) {
-            if (newValue !== 5n) {
-              break
-            }
-          } else if (toDivideTimes < 0) {
-            if (newValue !== 0n) {
-              break
-            }
-          }
-        }
-        let sn = snDecimal(res, minus)
-        return JSBD.round(sn, {
-          maximumFractionDigits,
-          roundingMode,
-        })
+      if (toDivideTimes < 0 && newValue !== 0n) {
+        break
       }
     }
+    let sn = snDecimal(res, minus)
+    return JSBD.round(sn, {
+      maximumFractionDigits,
+      roundingMode,
+    })
   }
   // remainder => a % b
   static remainder(a: Decimal, b: Decimal, option?: RoundOption): Decimal {

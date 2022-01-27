@@ -1,5 +1,12 @@
 import { Decimal } from '../../src/decimal'
 
+let t = (n: any, expected: any, digit: any) => {
+  test(n.toString(), () => {
+    let res = new Decimal(n)
+    expect(res.toFixed(digit)).toBe(expected)
+  })
+}
+
 // normal number input
 test('"0" toFixed', () => {
   let a = new Decimal('0.')
@@ -64,3 +71,9 @@ test('0 toFixed 2', () => {
   let a = new Decimal('0')
   expect(a.toFixed(2)).toBe('0.00')
 })
+
+t('100.001', '100.00', 2)
+t('100.000', '100.00', 2)
+t('100.00', '100.00', 2)
+t('100.0', '100.00', 2)
+t('100', '100.00', 2)
