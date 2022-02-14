@@ -8,6 +8,9 @@ export class JSBD {
    * @param intVal default value to init a BigDecimal object
    */
   static BigDecimal(intVal: DecimalIntVal) {
+    if (intVal instanceof Decimal) {
+      return snDecimal(intVal.mantissa, intVal.exponent)
+    }
     return new Decimal(intVal)
   }
   // add => a + b
