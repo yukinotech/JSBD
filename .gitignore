@@ -19,3 +19,6 @@ build
 
 # java
 *.class
+
+# benchmark
+benchmark
