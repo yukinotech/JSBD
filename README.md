@@ -1,5 +1,7 @@
 # JSBD
 
+[![npm version](https://img.shields.io/npm/v/jsbd.svg)](https://www.npmjs.com/package/jsbd)
+
 ## a JSBI style polyfill for BigDecimal
 
 This is a polyfill for BigDecimal , which implement tc39-bigDecimal proposal https://github.com/tc39/proposal-decimal
