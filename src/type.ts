@@ -1,4 +1,6 @@
-export type DecimalIntVal = string | number | bigint
+import { Decimal } from './decimal'
+
+export type DecimalIntVal = string | number | bigint | Decimal
 
 export type DecimalSign = -1 | 1
 
