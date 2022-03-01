@@ -35,8 +35,6 @@ jobs:
           else
           npm i
           fi
-      - run: npm run lint
-      - run: npm t
 
       # Only run the coverage once
       - if: ${{ matrix.node-version == '14.x' }}
