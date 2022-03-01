@@ -26,7 +26,15 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       # basically npm install but only installs from package-lock
-      - run: npm ci
+      - name: Install dependencies
+        run: |
+          if [ -e yarn.lock ]; then
+          yarn install --frozen-lockfile
+          elif [ -e package-lock.json ]; then
+          npm ci
+          else
+          npm i
+          fi
       - run: npm run lint
       - run: npm t
 
