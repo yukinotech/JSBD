@@ -1,5 +1,15 @@
-import { isLiteral, parseLiteral, isSN, parseSN, isInteger } from './utils'
+import {
+  isLiteral,
+  parseLiteral,
+  isSN,
+  parseSN,
+  isInteger,
+  getAbs,
+  getGcd,
+  isOnly25Or1,
+} from './utils'
 import { JSBD } from './jsbd'
+import { DecimalIntVal, RoundOption } from './type'
 
 export class Decimal {
   mantissa!: bigint
@@ -297,6 +307,419 @@ export class Decimal {
       throw new Error('precision should be an integer >= 1')
     }
   }
+
+  add(bVal: number | string | bigint | Decimal, option?: RoundOption): Decimal {
+    let b = parseParam(bVal)
+    if (this.exponent >= b.exponent) {
+      let minus = this.exponent - b.exponent
+      let newMantissa = this.mantissa * 10n ** BigInt(minus) + b.mantissa
+      let sn = snDecimal(newMantissa, b.exponent)
+      if (option) {
+        return JSBD.round(sn, option)
+      } else {
+        return sn
+      }
+    } else {
+      let minus = b.exponent - this.exponent
+      let newMantissa = b.mantissa * 10n ** BigInt(minus) + this.mantissa
+      let sn = snDecimal(newMantissa, this.exponent)
+      if (option) {
+        return JSBD.round(sn, option)
+      } else {
+        return sn
+      }
+    }
+  }
+  // subtract => a - b
+  subtract(
+    bVal: number | string | bigint | Decimal,
+    option?: RoundOption
+  ): Decimal {
+    let b = parseParam(bVal)
+    if (this.exponent >= b.exponent) {
+      let minus = this.exponent - b.exponent
+      let newMantissa = this.mantissa * 10n ** BigInt(minus) - b.mantissa
+      let sn = snDecimal(newMantissa, b.exponent)
+      if (option) {
+        return JSBD.round(sn, option)
+      } else {
+        return sn
+      }
+    } else {
+      let minus = b.exponent - this.exponent
+      let newMantissa = this.mantissa - b.mantissa * 10n ** BigInt(minus)
+      let sn = snDecimal(newMantissa, this.exponent)
+      if (option) {
+        return JSBD.round(sn, option)
+      } else {
+        return sn
+      }
+    }
+  }
+  // multiply => a * b
+  multiply(
+    bVal: number | string | bigint | Decimal,
+    option?: RoundOption
+  ): Decimal {
+    let b = parseParam(bVal)
+    let sn = snDecimal(this.mantissa * b.mantissa, this.exponent + b.exponent)
+    if (option) {
+      return JSBD.round(sn, option)
+    } else {
+      return sn
+    }
+  }
+  // pow => a ^ b
+  pow(power: number, option?: RoundOption): Decimal {
+    if (!(isInteger(power) && power > 0)) {
+      throw new RangeError('power must be a positive number')
+    }
+
+    let sn = snDecimal(this.mantissa, this.exponent)
+    power--
+    while (power > 0) {
+      sn = JSBD.multiply(sn, this)
+      power--
+    }
+
+    if (option) {
+      return JSBD.round(sn, option)
+    } else {
+      return sn
+    }
+  }
+  // divide => a / b
+  divide(
+    bVal: number | string | bigint | Decimal,
+    option?: RoundOption
+  ): Decimal {
+    let b = parseParam(bVal)
+    if (b.mantissa === 0n) {
+      throw new Error(`0 can't be divided`)
+    }
+    if (this.mantissa === 0n) {
+      return JSBD.BigDecimal('0')
+    }
+
+    // to abs
+    const aPositive = getAbs(this.mantissa)
+    const bPositive = getAbs(b.mantissa)
+    // get greatest common factor
+    // use Euclidean algorithm , if a>=b, getGcd(a,b) = getGcd(b,a mod b)
+    // result is not repeating decimal
+    const gcf = getGcd(aPositive, bPositive)
+    let bCoprime = bPositive / gcf
+
+    // common params
+    let res = this.mantissa / b.mantissa
+    let minus = this.exponent - b.exponent
+    let maximumFractionDigits = option?.maximumFractionDigits
+    let roundingMode = option?.roundingMode
+
+    // result is limit decimal , and no default maximumFractionDigits
+    if (maximumFractionDigits === undefined && isOnly25Or1(bCoprime)) {
+      // which means should get exact value of divide
+      let left = aPositive % bPositive
+      if (left === 0n) return snDecimal(res, minus)
+      const sign =
+        (this.mantissa > 0 && b.mantissa > 0) ||
+        (this.mantissa < 0 && b.mantissa < 0)
+          ? 1
+          : -1
+      while (true) {
+        // new value in the position of result
+        let left10 = left * 10n
+        let newValue = left10 / bPositive
+        left = left10 % bPositive
+        res = sign > 0 ? res * 10n + newValue : res * 10n - newValue
+        minus--
+        if (left === 0n) {
+          break
+        }
+      }
+      return snDecimal(res, minus)
+    }
+
+    // other case , maximumFractionDigits is needed
+    if (
+      !isInteger(maximumFractionDigits) &&
+      maximumFractionDigits !== undefined
+    ) {
+      throw new TypeError(
+        // @ts-ignore
+        `params maximumFractionDigits :${String(
+          maximumFractionDigits
+        )} is not a legal integer`
+      )
+    }
+
+    // the result is repeating decimal , maximumFractionDigits should be specified,
+    // or round the number with 34 fractional digits using halfUp round mode
+    if (maximumFractionDigits === undefined) {
+      maximumFractionDigits = 34
+    }
+
+    if (roundingMode === undefined) {
+      roundingMode = 'half up'
+    }
+
+    let dig = -maximumFractionDigits
+    if (minus < dig) {
+      let sn = snDecimal(res, minus)
+      return JSBD.round(sn, {
+        maximumFractionDigits,
+        roundingMode,
+      })
+    } else {
+      let toDivideTimes = minus - dig + 1
+      let left = aPositive % bPositive
+      if (left === 0n) {
+        let sn = snDecimal(res, minus)
+        return JSBD.round(sn, {
+          maximumFractionDigits,
+          roundingMode,
+        })
+      }
+      if (
+        (this.mantissa > 0 && b.mantissa > 0) ||
+        (this.mantissa < 0 && b.mantissa < 0)
+      ) {
+        while (toDivideTimes > 0) {
+          // new value in the position of result
+          let left10 = left * 10n
+          let newValue = left10 / bPositive
+          left = left10 % bPositive
+          res = res * 10n + newValue
+          minus--
+          toDivideTimes--
+          if (left === 0n) {
+            break
+          }
+        }
+        let sn = snDecimal(res, minus)
+        return JSBD.round(sn, {
+          maximumFractionDigits,
+          roundingMode,
+        })
+      } else {
+        while (toDivideTimes > 0) {
+          // new value in the position of result
+          let left10 = left * 10n
+          let newValue = left10 / bPositive
+          left = left10 % bPositive
+          res = res * 10n - newValue
+          minus--
+          toDivideTimes--
+          if (left === 0n) {
+            break
+          }
+        }
+        let sn = snDecimal(res, minus)
+        return JSBD.round(sn, {
+          maximumFractionDigits,
+          roundingMode,
+        })
+      }
+    }
+  }
+  // remainder => a % b
+  remainder(
+    bVal: number | string | bigint | Decimal,
+    option?: RoundOption
+  ): Decimal {
+    let b = parseParam(bVal)
+    let v = JSBD.divide(this, b, {
+      maximumFractionDigits: 0,
+      roundingMode: 'down',
+    })
+    if (option) {
+      return JSBD.round(JSBD.subtract(this, JSBD.multiply(v, b), option))
+    }
+    return JSBD.subtract(this, JSBD.multiply(v, b))
+  }
+  // equal => a === b
+  equal(bVal: number | string | bigint | Decimal): boolean {
+    let b = parseParam(bVal)
+    let minus: number
+    if (this.exponent > b.exponent) {
+      minus = this.exponent - b.exponent
+      return this.mantissa * 10n ** BigInt(minus) === b.mantissa
+    } else if (this.exponent < b.exponent) {
+      minus = b.exponent - this.exponent
+      return b.mantissa * 10n ** BigInt(minus) === this.mantissa
+    } else {
+      return this.mantissa === b.mantissa
+    }
+  }
+  // notEqual => a !== b
+  notEqual(bVal: number | string | bigint | Decimal): boolean {
+    let b = parseParam(bVal)
+    return !JSBD.equal(this, b)
+  }
+  // lessThan => a < b
+  lessThan(bVal: number | string | bigint | Decimal): boolean {
+    let b = parseParam(bVal)
+    let minus: number
+    if (this.exponent > b.exponent) {
+      minus = this.exponent - b.exponent
+      return this.mantissa * 10n ** BigInt(minus) < b.mantissa
+    } else if (this.exponent < b.exponent) {
+      minus = b.exponent - this.exponent
+      return this.mantissa < b.mantissa * 10n ** BigInt(minus)
+    } else {
+      return this.mantissa < b.mantissa
+    }
+  }
+  // greaterThanOrEqual => a >= b
+  greaterThanOrEqual(bVal: number | string | bigint | Decimal): boolean {
+    let b = parseParam(bVal)
+    return !JSBD.lessThan(this, b)
+  }
+  // greaterThan => a > b
+  greaterThan(bVal: number | string | bigint | Decimal): boolean {
+    let b = parseParam(bVal)
+    let minus: number
+    if (this.exponent > b.exponent) {
+      minus = this.exponent - b.exponent
+      return this.mantissa * 10n ** BigInt(minus) > b.mantissa
+    } else if (this.exponent < b.exponent) {
+      minus = b.exponent - this.exponent
+      return this.mantissa > b.mantissa * 10n ** BigInt(minus)
+    } else {
+      return this.mantissa > b.mantissa
+    }
+  }
+  // lessThanOrEqual => a <= b
+  lessThanOrEqual(bVal: number | string | bigint | Decimal): boolean {
+    let b = parseParam(bVal)
+    return !JSBD.greaterThan(this, b)
+  }
+  // round => BigDecimal.round
+  round(options?: RoundOption): Decimal {
+    // @ts-ignore
+    let roundingMode = options?.roundingMode
+    // @ts-ignore
+    const maximumFractionDigits = options?.maximumFractionDigits
+    // params type check
+    // check roundingMode
+    if (
+      roundingMode !== 'up' &&
+      roundingMode !== 'down' &&
+      roundingMode !== 'half down' &&
+      roundingMode !== 'half up' &&
+      roundingMode !== 'half even' &&
+      roundingMode !== undefined
+    ) {
+      throw new Error(
+        `roundingMode should be one of 'down' | 'half down' | 'half up' | 'half even' | 'up'`
+      )
+    }
+    // check maximumFractionDigits
+    if (
+      !isInteger(maximumFractionDigits) &&
+      maximumFractionDigits !== undefined
+    ) {
+      throw new Error(`maximumFractionDigits should be integer`)
+    }
+    let dig = maximumFractionDigits as number
+    if (dig === undefined) {
+      return snDecimal(this.mantissa, this.exponent)
+    }
+    if (roundingMode === undefined) {
+      roundingMode = 'half up'
+    }
+    if (this.mantissa === 0n) {
+      return snDecimal(this.mantissa, this.exponent)
+    }
+    // 取反
+    dig = -dig
+    if (roundingMode === 'up' || roundingMode === 'down') {
+      if (this.exponent >= dig) {
+        return snDecimal(this.mantissa, this.exponent)
+      } else {
+        // 缩放 maximumFractionDigits
+        let minus = dig - this.exponent
+        let div = 10n ** BigInt(minus)
+        let left = this.mantissa % div
+        let withZero = this.mantissa - left
+        if (this.mantissa > 0n && left > 0n) {
+          if (roundingMode === 'up') {
+            return snDecimal(withZero + div, this.exponent)
+          } else {
+            return snDecimal(withZero, this.exponent)
+          }
+        } else if (this.mantissa < 0n && left < 0n) {
+          if (roundingMode === 'up') {
+            return snDecimal(withZero - div, this.exponent)
+          } else {
+            return snDecimal(withZero, this.exponent)
+          }
+        } else {
+          // left === 0n
+          return snDecimal(withZero, this.exponent)
+        }
+      }
+    } else {
+      if (this.exponent >= dig) {
+        return snDecimal(this.mantissa, this.exponent)
+      } else {
+        let minus = dig - this.exponent
+        let div = 10n ** BigInt(minus)
+        let subDiv = 10n ** BigInt(minus - 1)
+        let left = this.mantissa % div
+        let subLeft = this.mantissa % subDiv
+        let dependValue = (left - subLeft) / subDiv
+        let withZero = this.mantissa - left
+        if (roundingMode === 'half up') {
+          if (getAbs(dependValue) > 4) {
+            if (this.mantissa > 0) {
+              return snDecimal(withZero + div, this.exponent)
+            } else {
+              return snDecimal(withZero - div, this.exponent)
+            }
+          } else {
+            return snDecimal(withZero, this.exponent)
+          }
+        } else if (roundingMode === 'half down') {
+          if (getAbs(dependValue) > 5) {
+            if (this.mantissa > 0) {
+              return snDecimal(withZero + div, this.exponent)
+            } else {
+              return snDecimal(withZero - div, this.exponent)
+            }
+          } else {
+            return snDecimal(withZero, this.exponent)
+          }
+        } else {
+          // roundingMode === 'half even'
+          if (getAbs(dependValue) > 5) {
+            if (this.mantissa > 0) {
+              return snDecimal(withZero + div, this.exponent)
+            } else {
+              return snDecimal(withZero - div, this.exponent)
+            }
+          } else if (getAbs(dependValue) < 5) {
+            return snDecimal(withZero, this.exponent)
+          } else {
+            // dependValue === 5
+            let superDiv = 10n ** BigInt(minus + 1)
+            let superLeft = this.mantissa % superDiv
+            // evenDependValue can be negative or positive
+            let evenDependValue = (superLeft - left) / div
+            if (evenDependValue % 2n !== 0n) {
+              if (this.mantissa > 0) {
+                return snDecimal(withZero + div, this.exponent)
+              } else {
+                return snDecimal(withZero - div, this.exponent)
+              }
+            } else {
+              return snDecimal(withZero, this.exponent)
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 // build a decimal form scientific notation
@@ -306,3 +729,11 @@ export function snDecimal(mantissa: bigint, exponent: number) {
   v.mantissa = mantissa
   return v
 }
+
+function parseParam(param: number | string | bigint | Decimal) {
+  if (param instanceof Decimal) return param
+  return new Decimal(param)
+}
+// let a = new Decimal(2)
+// let b = a.add(new Decimal(3)).divide(new Decimal(2))
+// console.log('b', b)
