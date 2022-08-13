@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "outDir": "./build", // 指定输出目录
-    "declarationDir": "./dist", // 指定输出目录
-    "rootDir": "./src", // 指定输出文件目录(用于输出)，用于控制输出目录结构
+    "outDir": "./build",
+    "declarationDir": "./dist",
+    "rootDir": "./src",
     "target": "es2020",
     "module": "es2020",
     "noImplicitAny": true,
