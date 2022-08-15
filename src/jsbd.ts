@@ -388,5 +388,4 @@ export class JSBD {
       }
     }
   }
-  static Decimal = Decimal
 }
