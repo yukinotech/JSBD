@@ -10,6 +10,12 @@ And some result of the method referred Java.math.BigDecimal
 
 typescript and 100% case coverage
 
+## babel plugin
+
+[https://github.com/yukinotech/babel-plugin-transform-jsbd-to-bigdecimal](https://github.com/yukinotech/babel-plugin-transform-jsbd-to-bigdecimal)
+
+convert `JSBD` to native BigDecimal syntax, when it is able to use native BigDecimal syntax in browser.
+
 ## install
 
 ```
