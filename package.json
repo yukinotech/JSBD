@@ -20,7 +20,8 @@
     "tsc": "tsc --project tsconfig.json",
     "test:pre": "tsc --project tsconfig.json && jest ./ts-test",
     "test": "tsc --project tsconfig.json && jest --coverage",
-    "build": "rimraf dist && yarn tsc && rollup --config rollup.config.js"
+    "build": "rimraf dist && yarn tsc && rollup --config rollup.config.js",
+    "bench": "node benchmark/index.js"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.3.0",
@@ -35,6 +36,7 @@
     "rollup": "^2.61.1",
     "rollup-plugin-terser": "^7.0.2",
     "ts-jest": "^27.1.2",
+    "tinybench": "^2.5.0",
     "typescript": "^4.5.3"
   },
   "husky": {

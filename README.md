@@ -340,6 +340,16 @@ console.log(v.toPrecision(4)) // 111.2
 console.log(v.toPrecision(2)) //1.1e+2
 ```
 
+## benchmark
+
+benchmark uses tinybench.
+
+```
+yarn install
+yarn build
+yarn bench
+```
+
 ## for developer
 
 since test use es module in node , better use node >= 14
