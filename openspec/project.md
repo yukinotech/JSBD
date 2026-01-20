@@ -1,60 +1,69 @@
-# Project Overview
+# 项目概述
 
-JSBD is a polyfill for the BigDecimal proposal (stage 1) in ECMAScript, designed with a JSBI-style approach. It implements high-precision decimal arithmetic, following the [tc39-bigDecimal proposal](https://github.com/tc39/proposal-decimal) and drawing inspiration from `Java.math.BigDecimal`.
+JSBD 是 ECMAScript 中 BigDecimal 提案（stage 1）的一个 polyfill，采用类似 JSBI 的设计思路。它实现了高精度十进制运算，遵循 [tc39-bigDecimal 提案](https://github.com/tc39/proposal-decimal)，并从 `Java.math.BigDecimal` 中汲取灵感。
 
-The library provides a robust set of operations for arithmetic, rounding, and comparison of decimal numbers, ensuring 100% test coverage and TypeScript support.
+该库提供了一整套健壮的十进制数运算、舍入和比较功能，并保证 100% 的测试覆盖率，同时支持 TypeScript。
 
-## Key Features
+## 主要特性
 
-- **BigDecimal Creation**: Support for initializing from numbers, strings, and BigInts.
-- **Arithmetic Operations**: `add`, `subtract`, `multiply`, `divide`, `remainder`, `pow`.
-- **Rounding Modes**: Comprehensive rounding options including `down`, `half down`, `half up`, `half even`, and `up`.
-- **Comparisons**: Full suite of comparison functions (`equal`, `greaterThan`, etc.).
-- **Formatting**: Standard methods like `toString`, `toFixed`, `toExponential`, and `toPrecision`.
+* **BigDecimal 创建**：支持从 number、string 和 BigInt 初始化。
+* **算术运算**：`add`、`subtract`、`multiply`、`divide`、`remainder`、`pow`。
+* **舍入模式**：提供全面的舍入选项，包括 `down`、`half down`、`half up`、`half even` 和 `up`。
+* **比较操作**：完整的比较函数集合（如 `equal`、`greaterThan` 等）。
+* **格式化**：提供标准方法，如 `toString`、`toFixed`、`toExponential` 和 `toPrecision`。
 
-# Tech Stack
+# 技术栈
 
-- **Language**: TypeScript
-- **Testing**: Jest (with `ts-jest`) is used for unit testing, aiming for high coverage.
-- **Build System**: Rollup is used to bundle the library into various formats (CommonJS, ESM, UMD).
-- **Code Quality**: Prettier and Husky are used for code formatting and pre-commit hooks.
-- **Package Manager**: Yarn
+* **语言**：TypeScript
+* **测试**：使用 Jest（配合 `ts-jest`）进行单元测试，目标是高覆盖率。
+* **构建系统**：使用 Rollup 将库打包为多种格式（CommonJS、ESM、UMD）。
+* **代码质量**：使用 Prettier 进行代码格式化，使用 Husky 管理 pre-commit 钩子。
+* **包管理器**：Yarn
 
-# Directory Structure
+# 目录结构
 
-- `src/`
-  - `index.ts`: Entry point exporting the library.
-  - `jsbd.ts`: Main implementation of the public API (JSBD object).
-  - `decimal.ts`: Core logic for `BigDecimal` data structure and low-level arithmetic.
-  - `utils.ts`: Utility functions for internal use.
-  - `type.ts`: TypeScript type definitions.
-- `test/`: Contains unit tests organized by module (`decimal`, `jsbd`, `utils`).
-- `benchmark/`: Performance benchmarks.
-- `dist/`: Generated build artifacts (created after build).
+* `src/`
 
-# Development Workflow
+  * `index.ts`：入口文件，导出整个库。
+  * `jsbd.ts`：公共 API 的主要实现（JSBD 对象）。
+  * `decimal.ts`：`BigDecimal` 数据结构及底层算术逻辑的核心实现。
+  * `utils.ts`：内部使用的工具函数。
+  * `type.ts`：TypeScript 类型定义。
+* `test/`：按模块组织的单元测试（`decimal`、`jsbd`、`utils`）。
+* `benchmark/`：性能基准测试。
+* `dist/`：构建后生成的产物（执行 build 后生成）。
 
-## Setup
+# 开发流程
+
+## 安装依赖
+
 ```bash
 yarn install
 ```
 
-## Running Tests
-Run all tests with coverage:
+## 运行测试
+
+运行所有测试并生成覆盖率报告：
+
 ```bash
 yarn test
 ```
 
-Run tests generally:
+普通运行测试：
+
 ```bash
 yarn test:pre
 ```
 
-## Building
-Build the project for production (generates `dist/`):
+## 构建
+
+构建生产版本（生成 `dist/`）：
+
 ```bash
 yarn build
 ```
 
-## Formatting
-The project uses Prettier. Setup includes a pre-commit hook to format staged files.
+## 格式化
+
+项目使用 Prettier 进行代码格式化，并通过 pre-commit 钩子对暂存的文件自动格式化。
+
