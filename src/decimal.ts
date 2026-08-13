@@ -18,6 +18,11 @@ export class Decimal {
       case 'string': {
         // to make easy to use
         intVal = intVal.trim()
+        // Support leading zeros in integer part (e.g., '0144' -> 144)
+        intVal = intVal.replace(/^0+(?=[^.eE])/g, '')
+        if (intVal === '' || intVal === '.') {
+          intVal = '0'
+        }
         if (isLiteral(intVal)) {
           // style like 1234.56
           let { mantissa, exponent } = parseLiteral(intVal)
